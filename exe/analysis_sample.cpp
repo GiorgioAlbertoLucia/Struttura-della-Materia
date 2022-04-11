@@ -18,6 +18,9 @@ using namespace std;
 
 void analysis_sample()
 {   
+
+    hello_world();
+
     ///////////////////// SET OUTPUT IN A FILE AND OTHER GENERAL SETTINGS ///////////////////////
 
     /*

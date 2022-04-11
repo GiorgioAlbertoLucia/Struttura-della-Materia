@@ -86,3 +86,10 @@ void z_test_branch(const char * file_name)
     file.close();
 }
 
+
+
+//////////////////////////////// HELLO WORLD ////////////////////////////////////////////////////////
+void hello_world()
+{
+    cout << "Hello world!" << endl;
+}
