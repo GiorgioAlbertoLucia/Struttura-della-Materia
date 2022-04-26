@@ -17,7 +17,7 @@
 
 using namespace std;
 
-////////////////////////////////// APPEND COLUMN ////////////////////////////////////////
+////////////////////////////////// APPEND COLUMN ////////////////////////////////////////////////////////
 /**
  * @brief This function add a column of floats (with their description as top line) to an existing .txt file
  * @param file_name path to the file
@@ -33,10 +33,12 @@ void append_column(const char * file_name, const char * col_name, vector<float> 
     file.close();
 
     file.open(file_name, ios::out);
+    int comment = comment_lines(file_name);
     for (int i = 0; i < file_lines.size(); i++)
     {
-        if (i == 0)     file << file_lines.at(i) << "\t\t" << col_name << endl;
-        else            file << file_lines.at(i) << "\t\t\t" << column.at(i-1) << endl;                          
+        if (i < comment)        file << file_lines.at(i) << endl;
+        else if (i == comment)  file << file_lines.at(i) << "\t\t" << col_name << endl;
+        else                    file << file_lines.at(i) << "\t\t\t" << column.at(i-1) << endl;                          
     }
     file.close();
 }
@@ -86,9 +88,38 @@ void z_test_branch(const char * file_name)
     file.close();
 }
 
+/**
+ * @brief Counts how many lines begin with '#' in a goven file (those lines will be used as comment lines).
+ * To move to the desired line, just use file.seekg().
+ * @param file_name 
+ * @return int 
+ */
+int comment_lines(const char * file_name)
+{
+    int comment = 0;
+    string line;
+    ifstream file(file_name);
+    if(file.is_open())  while(file >> line) if(line.at(0)=='#') {cout<<line<<endl; comment++;}
+    file.close();
+    return comment;
+}
 
+/**
+ * @brief Standard settings used for TGraph objects.
+ * @param graph 
+ */
+void std_graph_settings(TGraph& graph)
+{
+    graph.GetYaxis()->SetTitleOffset(1.4);
+    gPad->SetTopMargin(0.15);
+    gPad->SetLeftMargin(0.15);
+    graph.SetMarkerStyle(21);
+    graph.SetMarkerSize(0.3);
+    graph.SetLineColor(38);
+    graph.SetLineWidth(4);
+}
 
-//////////////////////////////// HELLO WORLD ////////////////////////////////////////////////////////
+//////////////////////////////// HELLO WORLD ////////////////////////////////////////////////////////////
 void hello_world()
 {
     cout << "Hello world!" << endl;

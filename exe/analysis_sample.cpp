@@ -31,14 +31,15 @@ void analysis_sample()
     */
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
-    /* First line is a description of each column */
     /*
-    ifstream file("../data/catena_elettronica.txt");
+    int first_line = comment_lines("../data/mappatura.txt") + 1;
+    ifstream file("../data/mappatura.txt");
+    for(int i=0; i<first_line; i++) file.ignore(10000, '\n');    
 
-    vector<float> Vin, Vout, CHN, err_Vin, err_Vout, err_CHN;
+    vector<float> x, sx, y, sy, B, sB;
     float entry1, entry2, entry3, entry4, entry5, entry6;
-    string line;
-    getline(file, line);                                            // skip first line
+    string names;
+    getline(file, names);                                            // store the names of the variables
 
     while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6)
     {
@@ -95,11 +96,7 @@ void analysis_sample()
 
     TGraphErrors * graph1 = new TGraphErrors(Vin.size(), &Vin[0], &Vout[0], &err_Vin[0], &err_Vout[0]);
     graph1->SetTitle("#splitline{Catena Elettronica}{y = p_{0} + p_{1} x};Vin [V];Vout [V]");
-    graph1->GetYaxis()->SetTitleOffset(1.4);
-    gPad->SetTopMargin(0.15);
-    gPad->SetLeftMargin(0.15);
-    graph1->SetMarkerStyle(21);
-    graph1->SetMarkerSize(0.3);
+    std_graph_settings(*graph1);
     
     graph1->Fit(tf1, "ER");
     graph1->Draw("ap");

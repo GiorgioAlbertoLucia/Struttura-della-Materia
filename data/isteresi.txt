@@ -1,0 +1,10 @@
+# Il file contiene i dati realtivi alla curva di isteresi. Sono contenuti quattro set di dati, 
+# ciascuno relativo a un semiciclo di isteresi (salita o discesa). Sono stati presi dati per due cicli di isteresi completi.
+# Si segnala il numero di dati preso per ogni semiciclo (ovviamente i dati sono in ordine).
+#
+# n1 = 
+# n2 = 
+# n3 = 
+# n4 =
+#
+I[]     sI[]        B[]     sB[]
