@@ -32,7 +32,7 @@ void analysis_sample()
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
     /*
-    int first_line = comment_lines("../data/mappatura.txt") + 1;
+    int first_line = comment_lines("../data/mappatura.txt");
     ifstream file("../data/mappatura.txt");
     for(int i=0; i<first_line; i++) file.ignore(10000, '\n');    
 
@@ -78,19 +78,19 @@ void analysis_sample()
 
     ////////////////////////// PRINT OUT DATA /////////////////////////////////////////////////
     /*
-    cout << endl << "Dati:" << endl << line << endl;
+    cout << endl << "Dati:" << endl << names << endl;
     for (int i = 0; i < Vin.size(); i++)   
         cout << Vin.at(i) << "\t" << Vout.at(i) << "\t" << CHN.at(i) << "\t" << err_Vin.at(i) << "\t" << 
         err_Vout.at(i) << "\t\t" << err_CHN.at(i) << endl;
     cout << endl;
-    
-    TCanvas * canvas1 = new TCanvas("Vin", "Vout", 500, 5, 500, 600);
-    canvas1->SetGrid();
     */
     
 
     /////////////////////////////// FIT //////////////////////////////////////////////////////
     /*
+    TCanvas * canvas1 = new TCanvas("Vin", "Vout", 500, 5, 500, 600);
+    canvas1->SetGrid();
+    
     TF1 * tf1 = new TF1("tf1", "[0]+[1]*x", -15, 15);
     tf1->SetLineColor(38);
 

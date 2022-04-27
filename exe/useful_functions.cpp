@@ -17,7 +17,38 @@
 
 using namespace std;
 
-////////////////////////////////// APPEND COLUMN ////////////////////////////////////////////////////////
+////////////////////////////////// FILE MANAGEMENT ///////////////////////////////////////////////////////
+
+/**
+ * @brief Counts the number of entries in a file (comment lines are not included).
+ * 
+ * @param file_name 
+ * @return int 
+ */
+int entries(const char * file_name)
+{
+    ifstream file(file_name);
+
+    if(file.is_open())
+    {
+        int first_line = comment_lines(file_name);
+        for(int i=0; i < first_line; i++)   file.ignore(10000, '\n'); 
+
+        int entries = 0;
+        string line;
+        while(getline(file, line))  entries++;
+
+        file.close();
+        return entries;
+    }
+    else
+    {
+        std::cerr << "Error: unable to open file" << std::endl;
+        file.close();
+        return 0;
+    }    
+}
+
 /**
  * @brief This function add a column of floats (with their description as top line) to an existing .txt file
  * @param file_name path to the file
@@ -41,6 +72,81 @@ void append_column(const char * file_name, const char * col_name, vector<float> 
         else                    file << file_lines.at(i) << "\t\t\t" << column.at(i-1) << endl;                          
     }
     file.close();
+}
+
+/**
+ * @brief Counts how many columns (text separated by a space, tab or comma) there are in a given string.
+ * If different lines of the file have a different amount of columns, an error is displayed.
+ * @return int number of columns.
+ */
+int count_column(const char * file_name)
+{
+    int columns = 0;
+    int save_columns = 0;       // used to check if each line has the same number of columns
+
+    std::ifstream file;
+    file.open(file_name);
+
+    if(file.is_open())
+    {   
+        int first_line = comment_lines(file_name);
+        for(int i=0; i < first_line; i++)   file.ignore(10000, '\n'); 
+
+        for (int j = 0; j < entries(file_name); j++)
+        {
+            while(j > 0)
+            {
+                std::string row, item;
+                getline(file, row);
+                std::istringstream iss(row);
+                while(iss >> item)   if(item.length())  columns++;
+
+                if (j > 0 && columns != save_columns)
+                {
+                    std::cerr << "Error: not all the lines have the same amount of columns. First " << j << " lines have "
+                    << save_columns << " columns (this value will be returned)." << std::endl;
+                    return save_columns;
+                }
+            
+                save_columns = columns;
+                columns = 0;
+            }
+        }
+    }
+    return save_columns;
+}
+
+/**
+ * @brief Counts how many lines begin with '#' in a goven file (those lines will be used as comment lines).
+ * To move to the desired line, just use file.seekg().
+ * @param file_name 
+ * @return int 
+ */
+int comment_lines(const char * file_name)
+{
+    int comment = 0;
+    string line;
+    ifstream file(file_name);
+    if(file.is_open())  while(file >> line) if(line.at(0)=='#') {cout<<line<<endl; comment++;}
+    file.close();
+    return comment;
+}
+
+//////////////////////////////// GENERAL SETTINGS //////////////////////////////////////////////////////
+
+/**
+ * @brief Standard settings used for TGraph objects.
+ * @param graph 
+ */
+void std_graph_settings(TGraph& graph)
+{
+    graph.GetYaxis()->SetTitleOffset(1.4);
+    gPad->SetTopMargin(0.15);
+    gPad->SetLeftMargin(0.15);
+    graph.SetMarkerStyle(21);
+    graph.SetMarkerSize(0.3);
+    graph.SetLineColor(38);
+    graph.SetLineWidth(4);
 }
 
 //////////////////////////////////// Z TEST /////////////////////////////////////////////////////////////
@@ -86,37 +192,6 @@ void z_test_branch(const char * file_name)
         z_test(exp, ref, err);
     }
     file.close();
-}
-
-/**
- * @brief Counts how many lines begin with '#' in a goven file (those lines will be used as comment lines).
- * To move to the desired line, just use file.seekg().
- * @param file_name 
- * @return int 
- */
-int comment_lines(const char * file_name)
-{
-    int comment = 0;
-    string line;
-    ifstream file(file_name);
-    if(file.is_open())  while(file >> line) if(line.at(0)=='#') {cout<<line<<endl; comment++;}
-    file.close();
-    return comment;
-}
-
-/**
- * @brief Standard settings used for TGraph objects.
- * @param graph 
- */
-void std_graph_settings(TGraph& graph)
-{
-    graph.GetYaxis()->SetTitleOffset(1.4);
-    gPad->SetTopMargin(0.15);
-    gPad->SetLeftMargin(0.15);
-    graph.SetMarkerStyle(21);
-    graph.SetMarkerSize(0.3);
-    graph.SetLineColor(38);
-    graph.SetLineWidth(4);
 }
 
 //////////////////////////////// HELLO WORLD ////////////////////////////////////////////////////////////

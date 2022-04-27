@@ -31,14 +31,14 @@ void analysis_sample()
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
     
-    int first_line = comment_lines("../data/isteresi.txt") + 1;
+    int first_line = comment_lines("../data/isteresi.txt");
     ifstream file("../data/mappatura.txt");
     for(int i=0; i<first_line; i++) file.ignore(10000, '\n'); 
 
-    int n1;
-    int n2;
-    int n3;
-    int n4;
+    const int n1 = 0;   // how many points for each dataset
+    const int n2 = 0;
+    const int n3 = 0;
+    const int n4 = 0;
     int n = 0;
 
     vector<float> I1, I2, I3, I4, sI1, sI2, sI3, sI4, B1, B2, B3, B4, sB1, sB2, sB3, sB4;
@@ -55,21 +55,21 @@ void analysis_sample()
             B1.push_back(entry3);
             sB1.push_back(entry4);
         }
-        if(n>=n1 && n<n2)
+        if(n>=n1 && n<(n1+n2))
         {
             I2.push_back(entry1);
             sI2.push_back(entry2);
             B2.push_back(entry3);
             sB2.push_back(entry4);
         }
-        if(n>=n2 && n<n3)
+        if(n>=(n1+n2) && n<(n1+n2+n3))
         {
             I3.push_back(entry1);
             sI3.push_back(entry2);
             B3.push_back(entry3);
             sB3.push_back(entry4);
         }
-        if(n>=n3 && n<n4)
+        if(n>=(n1+n2+n3) && n<(n1+n2+n3+n4))
         {
             I4.push_back(entry1);
             sI4.push_back(entry2);
