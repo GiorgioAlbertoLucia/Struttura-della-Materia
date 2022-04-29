@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void analysis_sample()
+void analysis2()
 {   
     ///////////////////// CURVA DI ISTERESI /////////////////////////////////////////////////////
 
@@ -32,13 +32,13 @@ void analysis_sample()
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
     
     int first_line = comment_lines("../data/isteresi.txt");
-    ifstream file("../data/mappatura.txt");
+    ifstream file("../data/isteresi.txt");
     for(int i=0; i<first_line; i++) file.ignore(10000, '\n'); 
 
-    const int n1 = 0;   // how many points for each dataset
-    const int n2 = 0;
-    const int n3 = 0;
-    const int n4 = 0;
+    const int n1 = 5;   // how many points for each dataset
+    const int n2 = 5;
+    const int n3 = 5;
+    const int n4 = 5;
     int n = 0;
 
     vector<float> I1, I2, I3, I4, sI1, sI2, sI3, sI4, B1, B2, B3, B4, sB1, sB2, sB3, sB4;

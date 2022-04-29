@@ -32,8 +32,9 @@ void analysis_sample()
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
     /*
-    int first_line = comment_lines("../data/mappatura.txt");
-    ifstream file("../data/mappatura.txt");
+    const char * path1 = "../data/mobilitàportatori.txt";
+    int first_line = comment_lines(path1);
+    ifstream file(path1);
     for(int i=0; i<first_line; i++) file.ignore(10000, '\n');    
 
     vector<float> x, sx, y, sy, B, sB;
@@ -41,14 +42,25 @@ void analysis_sample()
     string names;
     getline(file, names);                                            // store the names of the variables
 
-    while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6)
+    if(count_column(path1) == 4)
     {
-        Vin.push_back(entry1);
-        Vout.push_back(entry2);
-        CHN.push_back(entry3);
-        err_Vin.push_back(entry4);
-        err_Vout.push_back(entry5);
-        err_CHN.push_back(entry6);
+        while (file >> entry1 >> entry2 >> entry3 >> entry4)
+        {
+            VH2.push_back(entry1);
+            sVH2.push_back(entry2);
+            B2.push_back(entry3);
+            sB2.push_back(entry4);
+        }
+    }
+    else if(count_column(path1) == 6)
+    {
+        while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6)
+        {
+            VH2.push_back(entry1);
+            sVH2.push_back(entry2);
+            B2.push_back(entry3);
+            sB2.push_back(entry4);
+        }
     }
     */
 
@@ -64,11 +76,18 @@ void analysis_sample()
         err_E.push_back(err_Ei);
     }
 
-    // if there are no columns named E and err_E, respective values are appended to the file
-    string str_E("E"), str_err_E("err_energy");
-    if(line.find(str_E) == string::npos)        append_column(name, "E", E);
-    if(line.find(str_err_E) == string::npos)    append_column(name, "err_energy", err_E);
-    */
+    str1 = "\tVH2_correct[V]";
+    str2 = "\tsVH2_correct[V]";
+    if(names.find(str1) == string::npos)
+    {
+        names += "\tVH2_correct[V]";
+        append_column(path1, "VH2_correct[V]", VH2_correct);
+    }    
+    if(names.find(str2) == string::npos)
+    {
+        names += "\tsVH2_correct[V]";   
+        append_column(path1, "sVH2_correct[V]", sVH2_correct);
+    } 
 
     ////////////////////////// CLOSE FILE ///////////////////////////////////////////////////
     /*

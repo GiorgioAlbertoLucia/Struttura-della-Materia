@@ -20,6 +20,22 @@ using namespace std;
 ////////////////////////////////// FILE MANAGEMENT ///////////////////////////////////////////////////////
 
 /**
+ * @brief Counts how many lines begin with '#' in a goven file (those lines will be used as comment lines).
+ * To move to the desired line, just use file.seekg().
+ * @param file_name 
+ * @return int 
+ */
+int comment_lines(const char * file_name)
+{
+    int comment = 0;
+    string line;
+    ifstream file(file_name);
+    if(file.is_open())  while(file >> line) if(line.at(0)=='#') comment++;
+    file.close();
+    return comment;
+}
+
+/**
  * @brief Counts the number of entries in a file (comment lines are not included).
  * 
  * @param file_name 
@@ -63,13 +79,14 @@ void append_column(const char * file_name, const char * col_name, vector<float> 
     while(getline(file, line))  file_lines.push_back(line);     // fill a vector with the file content
     file.close();
 
-    file.open(file_name, ios::out);
     int comment = comment_lines(file_name);
+
+    file.open(file_name, ios::out);
     for (int i = 0; i < file_lines.size(); i++)
     {
         if (i < comment)        file << file_lines.at(i) << endl;
         else if (i == comment)  file << file_lines.at(i) << "\t\t" << col_name << endl;
-        else                    file << file_lines.at(i) << "\t\t\t" << column.at(i-1) << endl;                          
+        else                    file << file_lines.at(i) << "\t\t\t" << column.at(i-comment-1) << endl;                          
     }
     file.close();
 }
@@ -94,8 +111,6 @@ int count_column(const char * file_name)
 
         for (int j = 0; j < entries(file_name); j++)
         {
-            while(j > 0)
-            {
                 std::string row, item;
                 getline(file, row);
                 std::istringstream iss(row);
@@ -110,26 +125,9 @@ int count_column(const char * file_name)
             
                 save_columns = columns;
                 columns = 0;
-            }
         }
     }
     return save_columns;
-}
-
-/**
- * @brief Counts how many lines begin with '#' in a goven file (those lines will be used as comment lines).
- * To move to the desired line, just use file.seekg().
- * @param file_name 
- * @return int 
- */
-int comment_lines(const char * file_name)
-{
-    int comment = 0;
-    string line;
-    ifstream file(file_name);
-    if(file.is_open())  while(file >> line) if(line.at(0)=='#') {cout<<line<<endl; comment++;}
-    file.close();
-    return comment;
 }
 
 //////////////////////////////// GENERAL SETTINGS //////////////////////////////////////////////////////
