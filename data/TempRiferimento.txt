@@ -1,0 +1,11 @@
+# Misurazione della tensione di Hall per temperature variabili. Le temperature sono lette tramite un elemento Pt100
+# Le correnti fatte passare nell'elemento di misurazione sono nel range i = 
+#
+# Le misurazioni sono effettuate per valori di corrente costante nel toroide: I = 
+# Per queste misure di riferimento, il campo magnetico usato è spento.
+# 
+VH[]            sVH[]           T[]         sT[]
+1.1             2.1             3.1         4.1
+1.2             2.2             3.2         4.2
+1.3             2.3             3.3         4.3
+1.4             2.4             3.4         4.4

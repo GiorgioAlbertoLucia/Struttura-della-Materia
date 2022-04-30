@@ -10,6 +10,9 @@
         "string": "cpp",
         "string_view": "cpp",
         "unordered_map": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "__split_buffer": "cpp",
+        "list": "cpp",
+        "decayFit.C": "cpp"
     }
 }

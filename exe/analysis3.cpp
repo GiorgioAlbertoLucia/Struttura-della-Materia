@@ -24,7 +24,7 @@ void analysis3()
 
     //freopen("../output/analysis3.txt", "w", stdout);
     gROOT->SetStyle("Plain");
-    gStyle->SetOptFit(1100);
+    gStyle->SetOptFit(1110);
     gStyle->SetFitFormat("2.2e");
     
     ///////////////////// PART 1: REFERENCE MEASUREMENTS //////////////////////////////////////
@@ -89,6 +89,27 @@ void analysis3()
 
     const float omega = tf1->GetParameter(1);
     const float somega = tf1->GetParError(1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -194,7 +215,7 @@ void analysis3()
         tf->SetParNames("V_{0}", "#frac{R_{H} B}{t}");
 
         TGraphErrors * graph = new TGraphErrors(sub_i1.size(), &sub_i1[0], &sub_VH1correct[0], &sub_si1[0], &sub_sVH1correct[0]);
-        graph->SetTitle("#splitlines{Determinazione della}{costante di Hall}{V = V_{0} + #frac{R_{H} i B}{t}};i [A];V_{H} [V]");
+        graph->SetTitle("#splitline{Costante di Hall}{V = V_{0} + #frac{R_{H} i B}{t}};i [A];V_{H} [V]");
         std_graph_settings(*graph);
     
         canvas2->cd(i+1);
@@ -241,7 +262,74 @@ void analysis3()
 
     cout << "Z test: Hall constant R_H, B = const " << endl;
     z_test(R_H1, R_H2, sqrt(sR_H1*sR_H1 + sR_H2*sR_H2));
+
     
+    /////////////////////////// HALL CONSTANT - FIT //////////////////////////////////
+
+    TCanvas * canvas2_ = new TCanvas("canvas2_", "costante di Hall", 500, 5, 500, 600);
+    canvas2_->SetGrid();
+    canvas2_->Divide(1,2);
+
+    const int iter1[] = {0, sets1/2, sets1};
+
+    vector<float> R_H1_fit, sR_H1_fit;
+
+    for (int i = 0; i < 2; i++)
+    {
+        vector<float> sub_b1(b1.begin()+iter1[i], b1.begin()+iter1[i+1]);
+        vector<float> sub_sb1(sb1.begin()+iter1[i], sb1.begin()+iter1[i+1]);
+        vector<float> sub_B, sub_sB;
+        
+        for(int j = iter1[i]; j < iter1[i+1]; j++)
+        {
+            sub_B.push_back(B[j]);
+            sub_sB.push_back(sB[j]);
+        }
+
+        TF1 * tf = new TF1("tf", "[0]+[1]*x", -15, 15);
+        tf->SetLineColor(38);
+        tf->SetParNames("b_{0}", "#frac{R_{H}}{t}");
+
+        TGraphErrors * graph = new TGraphErrors(sub_B.size(), &sub_B[0], &sub_b1[0], &sub_sB[0], &sub_sb1[0]);
+        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} B}{t}};B [T];b []");
+        std_graph_settings(*graph);
+    
+        canvas2_->cd(i+1);
+        graph->Fit(tf, "ER");
+        graph->Draw("ap");
+    
+        cout << "Chi^2:" << tf->GetChisquare() << ", number of DoF: " << tf->GetNDF() << 
+        " (Probability: " << tf->GetProb() << ")." << endl << endl;
+
+        R_H1_fit.push_back(tf->GetParameter(1) * t);
+        sR_H1_fit.push_back(sqrt(pow(tf->GetParError(1)*t, 2) + pow(tf->GetParameter(1)*st, 2)));
+    }
+
+    canvas2_->SaveAs("../graphs/coeff_Hall1.jpg");
+    canvas2_->SaveAs("../graphs/coeff_Hall1.pdf");
+
+    cout << "Z Test: Hall constant - fit results: " << endl;
+    z_test(R_H1_fit.at(0), R_H1_fit.at(1), sqrt(pow(sR_H1_fit.at(0), 2) + pow(sR_H1_fit.at(1), 2)));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -356,7 +444,7 @@ void analysis3()
         tf->SetParNames("V_{0}", "#frac{R_{H} B}{t}");
 
         TGraphErrors * graph = new TGraphErrors(sub_B2.size(), &sub_B2[0], &sub_VH2correct[0], &sub_sB2[0], &sub_sVH2correct[0]);
-        graph->SetTitle("#splitlines{Determinazione della}{costante di Hall}{V = V_{0} + #frac{R_{H} i B}{t}};B [T];V_{H} [V]");
+        graph->SetTitle("#splitline{Costante di Hall}{V = V_{0} + #frac{R_{H} i B}{t}};B [T];V_{H} [V]");
         std_graph_settings(*graph);
     
         canvas3->cd(i+1);
@@ -399,6 +487,51 @@ void analysis3()
     cout << "Z test: Hall constant R_H, i = const " << endl;
     z_test(R_H1_, R_H2_, sqrt(sR_H1_*sR_H1_ + sR_H2_*sR_H2_));
     
+    /////////////////////////// HALL CONSTANT - FIT //////////////////////////////////
+
+    TCanvas * canvas3_ = new TCanvas("canvas3_", "costante di Hall", 500, 5, 500, 600);
+    canvas3_->SetGrid();
+    canvas3_->Divide(1,2);
+
+    const int iter2[] = {0, sets2/2, sets2};
+    vector<float> R_H2_fit, sR_H2_fit;
+
+    for (int i = 0; i < 2; i++)
+    {
+        vector<float> sub_b2(b2.begin()+iter2[i], b2.begin()+iter2[i+1]);
+        vector<float> sub_sb2(sb2.begin()+iter2[i], sb2.begin()+iter2[i+1]);
+        vector<float> sub_i2, sub_si2;
+        
+        for(int j = iter2[i]; j < iter2[i+1]; j++)
+        {
+            sub_i2.push_back(B[j]);
+            sub_si2.push_back(sB[j]);
+        }
+
+        TF1 * tf = new TF1("tf", "[0]+[1]*x", -15, 15);
+        tf->SetLineColor(38);
+        tf->SetParNames("b_{0}", "#frac{R_{H}}{t}");
+
+        TGraphErrors * graph = new TGraphErrors(sub_i2.size(), &sub_i2[0], &sub_b2[0], &sub_si2[0], &sub_sb2[0]);
+        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} i}{t}};i [A];b []");
+        std_graph_settings(*graph);
+    
+        canvas3_->cd(i+1);
+        graph->Fit(tf, "ER");
+        graph->Draw("ap");
+    
+        cout << "Chi^2:" << tf->GetChisquare() << ", number of DoF: " << tf->GetNDF() << 
+        " (Probability: " << tf->GetProb() << ")." << endl << endl;
+
+        R_H2_fit.push_back(tf->GetParameter(1) * t);
+        sR_H2_fit.push_back(sqrt(pow(tf->GetParError(1)*t, 2) + pow(tf->GetParameter(1)*st, 2)));
+    }
+
+    canvas3_->SaveAs("../graphs/coeff_Hall2.jpg");
+    canvas3_->SaveAs("../graphs/coeff_Hall2.pdf");
+
+    cout << "Z Test: Hall constant - fit results: " << endl;
+    z_test(R_H2_fit.at(0), R_H2_fit.at(1), sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2)));
 
     
 
