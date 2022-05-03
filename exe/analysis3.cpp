@@ -35,18 +35,52 @@ void analysis3()
     ifstream file("../data/VHriferimento.txt");
     for(int i=0; i<first_line; i++) file.ignore(10000, '\n');    
 
-    vector<float> VH0, sVH0, i0, si0;
+    vector<float> VH0, i0;
     float entry1, entry2, entry3, entry4, entry5, entry6;
     string names;
     getline(file, names);                                            // store the names of the variables
     
-    while (file >> entry1 >> entry2 >> entry3 >> entry4)
+    if(count_column("../data/VHriferimento.txt") == 2)
     {
-        VH0.push_back(entry1);
-        sVH0.push_back(entry2);
-        i0.push_back(entry3);
-        si0.push_back(entry4);
+        while (file >> entry1 >> entry2)
+        {
+            VH0.push_back(entry1);
+            i0.push_back(entry2);
+        }
     }
+    else if(count_column("../data/VHBconst.txt") == 4)
+    {
+        while (file >> entry1 >> entry2 >> entry3 >> entry4)
+        {
+            VH0.push_back(entry1);
+            i0.push_back(entry2);
+        }
+    }
+
+
+    ///////////////////////////// ADD DATA ///////////////////////////////////////////////////////
+    
+    vector<float> sVH0, si0; 
+    for(int i = 0; i < VH0.size(); i++)   
+    {
+        entry1 = VH0.at(i) * 0.02;
+        entry2 = i0.at(i) * 0.001 + 0.03;
+        sVH0.push_back(entry1);
+        si0.push_back(entry2);
+    }
+
+    string str1("\tsVH0[mV]"), str2("\tsVH0[mV]");
+    if(names.find(str1) == string::npos)
+    {
+        names += "\tsVH0[mV]";
+        append_column("../data/VHBconst.txt", "sVH0[mV]", sVH0);
+    }    
+    if(names.find(str2) == string::npos)
+    {
+        names += "\tsVH1_correct[V]";   
+        append_column("../data/VHBconst.txt", "sVH1_correct[V]", sVH1_correct);
+    }    
+
 
 
     ////////////////////////// CLOSE FILE ///////////////////////////////////////////////////
@@ -124,17 +158,15 @@ void analysis3()
     file.open("../data/VHBconst.txt");
     for(int i=0; i<first_line; i++) file.ignore(10000, '\n');    
 
-    vector<float> VH1, sVH1, i1, si1;
+    vector<float> VH1, i1;
     getline(file, names);                                            // store the names of the variables
 
-    if(count_column("../data/VHBconst.txt") == 4)
+    if(count_column("../data/VHBconst.txt") == 2)
     {
-        while (file >> entry1 >> entry2 >> entry3 >> entry4)
+        while (file >> entry1 >> entry2)
         {
             VH1.push_back(entry1);
-            sVH1.push_back(entry2);
-            i1.push_back(entry3);
-            si1.push_back(entry4);
+            i1.push_back(entry2);
         }
     }
     else if(count_column("../data/VHBconst.txt") == 6)
@@ -142,23 +174,26 @@ void analysis3()
         while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6)
         {
             VH1.push_back(entry1);
-            sVH1.push_back(entry2);
-            i1.push_back(entry3);
-            si1.push_back(entry4);
+            i1.push_back(entry2);
         }
     }
 
 
     ///////////////////////////// ADD DATA ///////////////////////////////////////////////////////
     
-    vector<float> VH1_correct, sVH1_correct; 
+    vector<float> VH1_correct, sVH1, si1, sVH1_correct; 
     for(int i = 0; i < VH1.size(); i++)   
     {
         entry1 = VH1.at(i) - (chi + omega*i1.at(i));
-        entry2 = sqrt(sVH1.at(i)*sVH1.at(i) + schi*schi + i1.at(i)*i1.at(i)*somega*somega + omega*omega*si1.at(i)*si1.at(i));
+        entry2 = VH1.at(i) * 0.02;
+        entry3 = i1.at(i) * 0.001 + 0.03;
+        entry4 = sqrt(sVH1.at(i)*sVH1.at(i) + schi*schi + i1.at(i)*i1.at(i)*somega*somega + omega*omega*si1.at(i)*si1.at(i));
+
 
         VH1_correct.push_back(entry1);
-        sVH1_correct.push_back(entry2);
+        sVH1.push_back(entry2);
+        si1.push_back(entry3);
+        sVH1_correct.push_back(entry4);
     }
 
     string str1("\tVH1_correct[V]"), str2("\tsVH1_correct[V]");

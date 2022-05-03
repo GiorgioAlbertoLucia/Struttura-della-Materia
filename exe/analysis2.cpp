@@ -31,14 +31,12 @@ void analysis2()
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
     
-    int first_line = comment_lines("../data/isteresi.txt");
-    ifstream file("../data/isteresi.txt");
+    const char * path = "../data/isteresi2.txt";
+    int first_line = comment_lines(path);
+    ifstream file(path);
     for(int i=0; i<first_line; i++) file.ignore(10000, '\n'); 
 
-    const int n1 = 5;   // how many points for each dataset
-    const int n2 = 5;
-    const int n3 = 5;
-    const int n4 = 5;
+    const int n_sets[] = {21, 21, 21, 21};       // how many points for each dataset
     int n = 0;
 
     vector<float> I1, I2, I3, I4, sI1, sI2, sI3, sI4, B1, B2, B3, B4, sB1, sB2, sB3, sB4;
@@ -46,39 +44,113 @@ void analysis2()
     string names;
     getline(file, names);                                            // store the names of the variables
 
-    while (file >> entry1 >> entry2 >> entry3 >> entry4)
+    if(count_column(path) == 3)
     {
-        if(n<n1)
+        while (file >> entry1 >> entry2 >> entry3)
         {
-            I1.push_back(entry1);
-            sI1.push_back(entry2);
-            B1.push_back(entry3);
-            sB1.push_back(entry4);
+            if(n<n_sets[0])
+            {
+                B1.push_back(entry1);
+                sB1.push_back(entry2);
+                I1.push_back(entry3);
+            }
+            if(n>=n_sets[0] && n<(n_sets[0]+n_sets[1]))
+            {
+                B2.push_back(entry1);
+                sB2.push_back(entry2);
+                I2.push_back(entry3);
+            }
+            if(n>=(n_sets[0]+n_sets[1]) && n<(n_sets[0]+n_sets[1]+n_sets[2]))
+            {
+                B3.push_back(entry1);
+                sB3.push_back(entry2);
+                I3.push_back(entry3);
+            }
+            if(n>=(n_sets[0]+n_sets[1]+n_sets[2]) && n<(n_sets[0]+n_sets[1]+n_sets[2]+n_sets[3]))
+            {
+                B4.push_back(entry1);
+                sB4.push_back(entry2);
+                I4.push_back(entry3);
+            }
+            n++;
         }
-        if(n>=n1 && n<(n1+n2))
+    }
+    else if(count_column(path) == 4)
+    {
+        while (file >> entry1 >> entry2 >> entry3 >> entry4)
         {
-            I2.push_back(entry1);
-            sI2.push_back(entry2);
-            B2.push_back(entry3);
-            sB2.push_back(entry4);
+            if(n<n_sets[0])
+            {
+                B1.push_back(entry1);
+                sB1.push_back(entry2);
+                I1.push_back(entry3);
+                sI1.push_back(entry4);
+            }
+            if(n>=n_sets[0] && n<(n_sets[0]+n_sets[1]))
+            {
+                B2.push_back(entry1);
+                sB2.push_back(entry2);
+                I2.push_back(entry3);
+                sI2.push_back(entry4);
+            }
+            if(n>=(n_sets[0]+n_sets[1]) && n<(n_sets[0]+n_sets[1]+n_sets[2]))
+            {
+                B3.push_back(entry1);
+                sB3.push_back(entry2);
+                I3.push_back(entry3);
+                sI3.push_back(entry4);
+            }
+            if(n>=(n_sets[0]+n_sets[1]+n_sets[2]) && n<(n_sets[0]+n_sets[1]+n_sets[2]+n_sets[3]))
+            {
+                B4.push_back(entry1);
+                sB4.push_back(entry2);
+                I4.push_back(entry3);
+                sI4.push_back(entry4);
+            }
+            n++;
         }
-        if(n>=(n1+n2) && n<(n1+n2+n3))
-        {
-            I3.push_back(entry1);
-            sI3.push_back(entry2);
-            B3.push_back(entry3);
-            sB3.push_back(entry4);
-        }
-        if(n>=(n1+n2+n3) && n<(n1+n2+n3+n4))
-        {
-            I4.push_back(entry1);
-            sI4.push_back(entry2);
-            B4.push_back(entry3);
-            sB4.push_back(entry4);
-        }
-        n++;
     }
 
+    
+    ///////////////////////////// ADD DATA ///////////////////////////////////////////////////////
+    for(int j = 0; j < 4; j++)
+    {
+        if(j == 0)  for(int i = 0; i < I1.size(); i++)   
+                        {
+                            entry1 = I1.at(i) * 0.006 + 0.02;
+                            sI1.push_back(entry1);
+                        }
+        if(j == 1)  for(int i = 0; i < I2.size(); i++)   
+                        {
+                            entry1 = I2.at(i) * 0.006 + 0.02;
+                            sI2.push_back(entry1);
+                        }
+        if(j == 2)  for(int i = 0; i < I3.size(); i++)   
+                        {
+                            entry1 = I3.at(i) * 0.006 + 0.02;
+                            sI3.push_back(entry1);
+                        }
+        if(j == 3)  for(int i = 0; i < I4.size(); i++)   
+                        {
+                            entry1 = I4.at(i) * 0.006 + 0.02;
+                            sI4.push_back(entry1);
+                        }
+    }
+    
+    vector<float> sI;
+    for(int j = 0; j < 4; j++)
+    {
+        if(j == 0)  for(int i = 0; i < I1.size(); i++)  sI.push_back(I1.at(i));
+        if(j == 1)  for(int i = 0; i < I2.size(); i++)  sI.push_back(I2.at(i)); 
+        if(j == 2)  for(int i = 0; i < I3.size(); i++)  sI.push_back(I3.at(i)); 
+        if(j == 3)  for(int i = 0; i < I4.size(); i++)  sI.push_back(I4.at(i));
+    }
+    string str1("\tsI1[mA]"), str2("\tsI1[mA]");
+    if(names.find(str1) == string::npos)
+    {
+        names += "\tsI1[mA]";
+        append_column(path, "sI1[mA]", sI);
+    }   
 
 
     ////////////////////////// CLOSE FILE ///////////////////////////////////////////////////
@@ -91,16 +163,16 @@ void analysis2()
     
     cout << endl << "Dati prima discesa:" << endl << names << endl;
     for (int i = 0; i < I1.size(); i++)   
-        cout << I1.at(i) << "\t" << sI1.at(i) << "\t" << B1.at(i) << "\t" << sB1.at(i) << endl;
+        cout << B1.at(i) << "\t" << sB1.at(i) << "\t" << I1.at(i) << "\t" << sI1.at(i) << endl;
     cout << endl << "Dati prima salita:" << endl << names << endl;
     for (int i = 0; i < I2.size(); i++)   
-        cout << I2.at(i) << "\t" << sI2.at(i) << "\t" << B2.at(i) << "\t" << sB2.at(i) << endl;
+        cout << B2.at(i) << "\t" << sB2.at(i) << "\t" << I2.at(i) << "\t" << sI2.at(i) << endl;
     cout << endl << "Dati seconda discesa:" << endl << names << endl;
     for (int i = 0; i < I3.size(); i++)   
-        cout << I3.at(i) << "\t" << sI3.at(i) << "\t" << B3.at(i) << "\t" << sB3.at(i) << endl;
+        cout << B3.at(i) << "\t" << sB3.at(i) << "\t" << I3.at(i) << "\t" << sI3.at(i) << endl;
     cout << endl << "Dati seconda salita:" << endl << names << endl;
     for (int i = 0; i < I4.size(); i++)   
-        cout << I4.at(i) << "\t" << sI4.at(i) << "\t" << B4.at(i) << "\t" << sB4.at(i) << endl;
+        cout << B4.at(i) << "\t" << sB4.at(i) << "\t" << I4.at(i) << "\t" << sI4.at(i) << endl;
     cout << endl;
     
 
@@ -113,7 +185,7 @@ void analysis2()
     tf1->SetLineColor(38);
 
     TGraphErrors * graph1 = new TGraphErrors(I1.size(), &I1[0], &B1[0], &sI1[0], &sB1[0]);
-    graph1->SetTitle("#splitline{Ciclo di isteresi}{B = p_{0} + p_{1} I};I [A];B [T]");
+    graph1->SetTitle("#splitline{Ciclo di isteresi}{prima discesa};I [A];B [T]");
     std_graph_settings(*graph1);
     
     graph1->Fit(tf1, "ER");
@@ -131,7 +203,7 @@ void analysis2()
     tf2->SetLineColor(38);
 
     TGraphErrors * graph2 = new TGraphErrors(I2.size(), &I2[0], &B2[0], &sI2[0], &sB2[0]);
-    graph2->SetTitle("#splitline{Ciclo di isteresi}{B = p_{0} + p_{1} I};I [A];B [T]");
+    graph2->SetTitle("#splitline{Ciclo di isteresi}{prima salita};I [A];B [T]");
     std_graph_settings(*graph2);
     
     graph2->Fit(tf2, "ER");
@@ -149,7 +221,7 @@ void analysis2()
     tf3->SetLineColor(38);
 
     TGraphErrors * graph3 = new TGraphErrors(I3.size(), &I3[0], &B3[0], &sI3[0], &sB3[0]);
-    graph3->SetTitle("#splitline{Ciclo di isteresi}{B = p_{0} + p_{1} I};I [A];B [T]");
+    graph3->SetTitle("#splitline{Ciclo di isteresi}{seconda discesa};I [A];B [T]");
     std_graph_settings(*graph3);
     
     graph3->Fit(tf3, "ER");
@@ -167,7 +239,7 @@ void analysis2()
     tf4->SetLineColor(38);
 
     TGraphErrors * graph4 = new TGraphErrors(I4.size(), &I4[0], &B4[0], &sI4[0], &sB4[0]);
-    graph4->SetTitle("#splitline{Ciclo di isteresi}{B = p_{0} + p_{1} I};I [A];B [T]");
+    graph4->SetTitle("#splitline{Ciclo di isteresi}{seconda discesa};I [A];B [T]");
     std_graph_settings(*graph4);
     
     graph4->Fit(tf4, "ER");

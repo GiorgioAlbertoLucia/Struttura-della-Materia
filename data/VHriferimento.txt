@@ -1,7 +1,25 @@
 # Misurazione del campo di Hall in assenza di campo magnetico per individuare l'entità del disallineamento dei contatti
-# 
-VH[]        sVH[]       i[]         si[]
-1.1         2.12134124  3.1         4.1
-1.2         2.2         3.2         4.2
-1.3         2.3         3.3         4.3
-1.4         2.4         3.4         4.4
+#
+#   IDM 103N Datasheet (Amperometro): https://www.sglabs.it/public/Iso-Tech_IDM103N.pdf
+#   errori sulle tensioni di Hall: 2% della misura
+#
+#   VH[mV]        sVH[]         i[mA]           si[]
+#
+VH[mV]        sVH[]         i[mA]           si[]
+-1.95         0.01          -8.00           0.05            
+-1.71         0.01          -7.00           0.05
+-1.46         0.01          -6.00           0.05
+-1.22         0.01          -5.00           0.05
+-0.97         0.01          -4.00           0.05
+-0.73         0.01          -3.00           0.05
+-0.48         0.01          -2.00           0.05
+-0.24         0.01          -1.00           0.05
+0             0.01          0.00            0.05
+0.25          0.01          1.00            0.05
+0.50          0.01          2.00            0.05
+0.74          0.01          3.00            0.05
+0.98          0.01          4.00            0.05
+1.23          0.01          5.00            0.05
+1.47          0.01          6.00            0.05
+1.72          0.01          7.00            0.05
+1.96          0.01          8.00            0.05

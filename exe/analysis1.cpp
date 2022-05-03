@@ -55,20 +55,20 @@ void analysis1()
 
     ///////////////////////////// ADD DATA ///////////////////////////////////////////////////////
     
-    float fix_x = 10;
-    float fix_y = 10;
+    float fix_x = 20;
+    float fix_y = 20;
     vector<float> sub_x, sub_sx, sub_y, sub_sy, Bx, sBx, By, sBy;
 
     for(int i = 0; i < x.size(); i++)   
     {
-        if(x.at(i)==fix_x)
+        if(i < 5)
         {
             sub_y.push_back(y.at(i));
             sub_sy.push_back(sy.at(i));
             By.push_back(B.at(i));
             sBy.push_back(sB.at(i));
         }
-        if(y.at(i)==fix_y)
+        if(i >= 5 && i < 10)
         {
             sub_x.push_back(x.at(i));
             sub_sx.push_back(sx.at(i));
@@ -85,8 +85,8 @@ void analysis1()
     ////////////////////////// PRINT OUT DATA /////////////////////////////////////////////////
     
     cout << endl << "Dati:" << endl << names << endl;
-    for (int i = 0; i < x.size(); i++)   
-        cout << x.at(i) << "\t" << sx.at(i) << "\t" << y.at(i) << "\t" << sy.at(i) << "\t" << 
+    for (int i = 0; i < sub_x.size(); i++)   
+        cout << sub_x.at(i) << "\t" << sx.at(i) << "\t" << sub_y.at(i) << "\t" << sy.at(i) << "\t" << 
         B.at(i) << "\t\t" << sB.at(i) << endl;
     cout << endl;
     
@@ -95,7 +95,7 @@ void analysis1()
     canvas1->SetGrid();
 
     TGraphErrors * graph1 = new TGraphErrors(sub_x.size(), &sub_x[0], &Bx[0], &sub_sx[0], &sBx[0]);
-    graph1->SetTitle("#splitline{Mappatura del}{campo magnetico};x [];B [T]");
+    graph1->SetTitle("#splitline{Mappatura del}{campo magnetico};x [mm];B [mT]");
     std_graph_settings(*graph1);
     
     graph1->Draw("apl");
@@ -106,7 +106,7 @@ void analysis1()
     canvas2->SetGrid();
 
     TGraphErrors * graph2 = new TGraphErrors(sub_y.size(), &sub_y[0], &By[0], &sub_sy[0], &sBy[0]);
-    graph2->SetTitle("#splitline{Mappatura del}{campo magnetico};x [];B [T]");
+    graph2->SetTitle("#splitline{Mappatura del}{campo magnetico};x [mm];B [mT]");
     std_graph_settings(*graph2);
     
     graph2->Draw("apl");
@@ -117,7 +117,7 @@ void analysis1()
     canvas3->SetGrid();
 
     TGraph2D * graph3 = new TGraph2D(x.size(), &x[0], &y[0], &B[0]);
-    graph3->SetTitle("#splitline{Mappatura del}{campo magnetico};x [];y [];B [T]");
+    graph3->SetTitle("#splitline{Mappatura del}{campo magnetico};x [mm];y [mm];B [mT]");
     
     graph3->Draw("surf1");
     canvas3->SaveAs("../graphs/mappatura_xy.jpg");
@@ -126,7 +126,7 @@ void analysis1()
     /*
     Int_t n = x.size();
     TGraph2DErrors * graph4 = new TGraph2DErrors(n, &x[0], &y[0], &B[0], &sx[0], &sy[0], &sB[0]);
-    graph4->SetTitle("#splitline{Mappatura del}{campo magnetico};x [];B [T]");
+    graph4->SetTitle("#splitline{Mappatura del}{campo magnetico};x [mm];y [mm];B [mT]");
     
     graph4->Draw("err");
     canvas->SaveAs("../graphs/mappatura_xyerr.jpg");
