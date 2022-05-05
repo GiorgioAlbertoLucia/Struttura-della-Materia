@@ -32,29 +32,25 @@ void analysis5()
     ifstream file(path1);
     for(int i=0; i<first_line; i++) file.ignore(10000, '\n');    
 
-    vector<float> VH, sVH, B, sB;
-    float entry1, entry2, entry3, entry4, entry5, entry6;
+    vector<float> VH, I, B, sVH, sB, sI;
+    float entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry8;
     string names;
     getline(file, names);                                            // store the names of the variables
 
-    if(count_column(path1) == 4)
+    if(count_column(path1) == 2)
     {
-        while (file >> entry1 >> entry2 >> entry3 >> entry4)
+        while (file >> entry1 >> entry2)
         {
             VH.push_back(entry1);
-            sVH.push_back(entry2);
-            B.push_back(entry3);
-            sB.push_back(entry4);
+            I.push_back(entry2);
         }
     }
-    else if(count_column(path1) == 6)
+    else if(count_column(path1) == 8)
     {
-        while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6)
+        while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6 >> entry7 >> entry8)
         {
             VH.push_back(entry1);
-            sVH.push_back(entry2);
-            B.push_back(entry3);
-            sB.push_back(entry4);
+            I.push_back(entry3);
         }
     }
 
@@ -62,33 +58,72 @@ void analysis5()
     ///////////////////////////// ADD DATA ///////////////////////////////////////////////////////
 
     const float V0 = 0.;
-    const float sV0 = 0.1;
-    const float I = 1.;
-    const float sI = 0.1; 
+    const float sV0 = 0.;
+    const float i = - 0.35;
+    const float si = 0.03; 
+    const float sB_sist = 0.;
+
+    // I -> B
+    const float a_tilde = 6.;
+    const float sa_tilde = 0.;
+    const float b_tilde = 204.;
+    const float sb_tilde = 0.;
 
     vector<float> R, sR;
     
-    for(int i = 0; i < VH.size(); i++)   
+    for(int j = 0; j < VH.size(); j++)   
     {
-        entry1 = (VH.at(i) - V0)/I;
-        entry2 = sqrt(pow(sVH.at(i)/I, 2) + pow(sV0/I, 2) + pow(sI*(VH.at(i)-V0)/(I*I), 2));
+        entry1 = a_tilde + b_tilde * I.at(j);
+        B.push_back(entry1);
         
+        entry2 = (VH.at(j) - V0)/i;
         R.push_back(entry1);
-        sR.push_back(entry2);
+
+        entry3 = VH.at(j) * 0.02;
+        sVH.push_back(entry3);
+
+        entry4 = I.at(j) * 0.002 + 0.03;
+        sI.push_back(entry4);
+
+        entry5 = sqrt( (sa_tilde*sa_tilde + pow(sb_tilde*I.at(j), 2) + pow(b_tilde*sI.at(j), 2)) + sB_sist*sB_sist);
+        sB.push_back(entry5);
+
+        entry6 = sqrt(pow(sVH.at(j)/i, 2) + pow(sV0/i, 2) + pow(si*(VH.at(j)-V0)/(i*i), 2));
+        sR.push_back(entry6);
     }
 
-    string str1("\tR[Ohm]");
-    string str2("\tsR[Ohm]");
+    string str1("\tB[mT]"), str2("\tR[Ohm]"), str3("\tsVH[mV]"), str4("\tsI[A]"), str5("\tsB[mT]"), str6("\tsR[Ohm]");
     if(names.find(str1) == string::npos)
     {
-        names += "\tR[Ohm]";
-        append_column(path1, "R[Ohm]", R);
+        names += "\tB[mT]";
+        append_column(path1, "B[mT]", B);
     }    
     if(names.find(str2) == string::npos)
+    {
+        names += "\tR[Ohm]";   
+        append_column(path1, "R[Ohm]", R);
+    } 
+    if(names.find(str3) == string::npos)
+    {
+        names += "\tsVH[mV]";
+        append_column(path1, "sVH[mV]", sVH);
+    }    
+    if(names.find(str4) == string::npos)
+    {
+        names += "\tsI[A]";   
+        append_column(path1, "sI[A]", sI);
+    } 
+    if(names.find(str5) == string::npos)
+    {
+        names += "\tsB[mT]";
+        append_column(path1, "sB[mT]", sB);
+    }    
+    if(names.find(str6) == string::npos)
     {
         names += "\tsR[Ohm]";   
         append_column(path1, "sR[Ohm]", sR);
     } 
+    
 
     ////////////////////////// CLOSE FILE ///////////////////////////////////////////////////
     
@@ -99,9 +134,9 @@ void analysis5()
     ////////////////////////// PRINT OUT DATA /////////////////////////////////////////////////
     
     cout << endl << "Dati:" << endl << names << endl;
-    for (int i = 0; i < VH.size(); i++)   
-        cout << VH.at(i) << "\t" << sVH.at(i) << "\t" << B.at(i) << "\t" << sB.at(i) << "\t" << 
-        R.at(i) << "\t\t" << sR.at(i) << endl;
+    for (int j = 0; j < VH.size(); j++)   
+        cout << VH.at(j) << "\t" << I.at(j) << "\t" <<  B.at(j) << "\t"  << R.at(j) 
+        << "\t" << sVH.at(j) << "\t" << sI.at(j) << "\t" << sB.at(j) << "\t\t" << sR.at(j) << endl;
     cout << endl;
     
     /////////////////////////////// FIT FORMA QUADRATICA //////////////////////////////////////////////////////
@@ -112,9 +147,10 @@ void analysis5()
     TF1 * tf1 = new TF1("tf1", "[0] + [1]*x*x", -15, 15);
     tf1->SetLineColor(38);
     tf1->SetParName(0, "R_{0}");
+    tf1->SetParameter(1, 1);
 
     TGraphErrors * graph1 = new TGraphErrors(B.size(), &B[0], &R[0], &sB[0], &sR[0]);
-    graph1->SetTitle("#splitline{Magnetoresistenza}{R = R_{0} + p_{1} B^2};B [T];R [#Omega]");
+    graph1->SetTitle("#splitline{Magnetoresistenza}{R = R_{0} + p_{1} B^2};B [mT];R [#Omega]");
     std_graph_settings(*graph1);
     
     graph1->Fit(tf1, "ER");
@@ -133,9 +169,11 @@ void analysis5()
     TF1 * tf2 = new TF1("tf2", "[0]*(1+[1]*(x-[2]))", -15, 15);
     tf2->SetLineColor(38);
     tf2->SetParNames("R_{0}", "#mu^2", "B_{0}");
+    tf2->SetParameter(1, 1);
+    tf2->SetParameter(2, 5);
 
     TGraphErrors * graph2 = new TGraphErrors(B.size(), &B[0], &R[0], &sB[0], &sR[0]);
-    graph2->SetTitle("#splitline{Magnetoresistenza}{R = R_{0} (1 + #mu^2 (B - B_{0})};B [T];R [#Omega]");
+    graph2->SetTitle("#splitline{Magnetoresistenza}{R = R_{0} [1 + #mu^2 (B - B_{0})]};B [mT];R [#Omega]");
     std_graph_settings(*graph2);
     
     graph2->Fit(tf2, "ER");

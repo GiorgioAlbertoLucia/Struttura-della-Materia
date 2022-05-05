@@ -36,7 +36,7 @@ void analysis3()
     for(int i=0; i<first_line; i++) file.ignore(10000, '\n');    
 
     vector<float> VH0, i0;
-    float entry1, entry2, entry3, entry4, entry5, entry6;
+    float entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry8;
     string names;
     getline(file, names);                                            // store the names of the variables
     
@@ -48,7 +48,7 @@ void analysis3()
             i0.push_back(entry2);
         }
     }
-    else if(count_column("../data/VHBconst.txt") == 4)
+    else if(count_column("../data/VHriferimento.txt") == 4)
     {
         while (file >> entry1 >> entry2 >> entry3 >> entry4)
         {
@@ -63,22 +63,23 @@ void analysis3()
     vector<float> sVH0, si0; 
     for(int i = 0; i < VH0.size(); i++)   
     {
-        entry1 = VH0.at(i) * 0.02;
-        entry2 = i0.at(i) * 0.001 + 0.03;
+        entry1 = abs(VH0.at(i)) * 0.02;
+        entry2 = abs(i0.at(i)) * 0.001 + 0.03;
+
         sVH0.push_back(entry1);
         si0.push_back(entry2);
     }
 
-    string str1("\tsVH0[mV]"), str2("\tsVH0[mV]");
+    string str1("\tsVH0[mV]"), str2("\tsi0[mA]");
     if(names.find(str1) == string::npos)
     {
         names += "\tsVH0[mV]";
-        append_column("../data/VHBconst.txt", "sVH0[mV]", sVH0);
+        append_column("../data/VHriferimento.txt", "sVH0[mV]", sVH0);
     }    
     if(names.find(str2) == string::npos)
     {
-        names += "\tsVH1_correct[V]";   
-        append_column("../data/VHBconst.txt", "sVH1_correct[V]", sVH1_correct);
+        names += "\tsi0[mA]";   
+        append_column("../data/VHriferimento.txt", "si0[mA]", si0);
     }    
 
 
@@ -93,7 +94,7 @@ void analysis3()
     
     cout << endl << "Dati della misura di riferimento:" << endl << names << endl;
     for (int i = 0; i < VH0.size(); i++)   
-        cout << VH0.at(i) << "\t" << sVH0.at(i) << "\t" << i0.at(i) << "\t" << si0.at(i) << endl;
+        cout << VH0.at(i) << "\t" << i0.at(i) << "\t" << sVH0.at(i) << "\t" << si0.at(i) << endl;
     cout << endl;
     
     
@@ -185,27 +186,40 @@ void analysis3()
     for(int i = 0; i < VH1.size(); i++)   
     {
         entry1 = VH1.at(i) - (chi + omega*i1.at(i));
-        entry2 = VH1.at(i) * 0.02;
-        entry3 = i1.at(i) * 0.001 + 0.03;
-        entry4 = sqrt(sVH1.at(i)*sVH1.at(i) + schi*schi + i1.at(i)*i1.at(i)*somega*somega + omega*omega*si1.at(i)*si1.at(i));
-
-
         VH1_correct.push_back(entry1);
+
+        entry2 = VH1.at(i) * 0.02;
         sVH1.push_back(entry2);
+
+        entry3 = i1.at(i) * 0.001 + 0.03;
         si1.push_back(entry3);
+
+        entry4 = sqrt(sVH1.at(i)*sVH1.at(i) + schi*schi + i1.at(i)*i1.at(i)*somega*somega + omega*omega*si1.at(i)*si1.at(i));
         sVH1_correct.push_back(entry4);
     }
 
-    string str1("\tVH1_correct[V]"), str2("\tsVH1_correct[V]");
+    str1 = "\tVH1_correct[mV]";
+    str2 = "\tsVH1[mV]";
+    string str3("\tsi1[mA]"), str4("\tsVH1_correct[mV]");
     if(names.find(str1) == string::npos)
     {
-        names += "\tVH1_correct[V]";
-        append_column("../data/VHBconst.txt", "VH1_correct[V]", VH1_correct);
-    }    
+        names += "\tVH1_correct[mV]";
+        append_column("../data/VHBconst.txt", "\tVH1_correct[mV]", VH1_correct);
+    }
     if(names.find(str2) == string::npos)
     {
-        names += "\tsVH1_correct[V]";   
-        append_column("../data/VHBconst.txt", "sVH1_correct[V]", sVH1_correct);
+        names += "\tsVH1[mV]";   
+        append_column("../data/VHBconst.txt", "\tsVH1[mV]", sVH1);
+    } 
+    if(names.find(str3) == string::npos)
+    {
+        names += "\tsi1[mA]";   
+        append_column("../data/VHBconst.txt", "\tsi1[mA]", si1);
+    }     
+    if(names.find(str4) == string::npos)
+    {
+        names += "\tsVH1_correct[mV]";   
+        append_column("../data/VHBconst.txt", "\tsVH1_correct[mV]", sVH1_correct);
     }    
 
     
@@ -221,8 +235,8 @@ void analysis3()
     
     cout << endl << "Dati della misura con B = const:" << endl << names << endl;
     for (int i = 0; i < VH1.size(); i++)   
-        cout << VH1.at(i) << "\t" << sVH1.at(i) << "\t" << i1.at(i) << "\t" << si1.at(i) << "\t" 
-        << VH1_correct.at(i) << "\t" << sVH1_correct.at(i) << endl;
+        cout << VH1.at(i) << "\t" << i1.at(i) << "\t" << VH1_correct.at(i) << "\t" << sVH1.at(i) << "\t" 
+        << si1.at(i) << "\t" << sVH1_correct.at(i) << endl;
     cout << endl;
 
     //////////////////////////////// FIT FOR ALL SUB-DATASETS //////////////////////////////////////
@@ -231,15 +245,14 @@ void analysis3()
     canvas2->SetGrid();
     canvas2->Divide(2,5);
 
-    const float B[] = {1., 2., 3., 4., 5., 1., 2., 3., 4., 5.};
-    const float sB[] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
-    const int n1[] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50};    // position where each subset begins
+    
+    const int n1[] = {0, 9, 18, 27, 36, 45, 54, 63, 72, 81, 90};    // position where each subset begins
     const int sets1 = 10;                                           // number of sub-datasets
 
     vector<float> a1, sa1, b1, sb1;
 
     for (int i = 0; i < sets1; i++)
-    {
+    { 
         vector<float> sub_VH1correct(VH1_correct.begin()+n1[i], VH1_correct.begin()+n1[i+1]);
         vector<float> sub_sVH1correct(sVH1_correct.begin()+n1[i], sVH1_correct.begin()+n1[i+1]);
         vector<float> sub_i1(i1.begin()+n1[i], i1.begin()+n1[i+1]);
@@ -250,7 +263,7 @@ void analysis3()
         tf->SetParNames("V_{0}", "#frac{R_{H} B}{t}");
 
         TGraphErrors * graph = new TGraphErrors(sub_i1.size(), &sub_i1[0], &sub_VH1correct[0], &sub_si1[0], &sub_sVH1correct[0]);
-        graph->SetTitle("#splitline{Costante di Hall}{V = V_{0} + #frac{R_{H} i B}{t}};i [A];V_{H} [V]");
+        graph->SetTitle("#splitline{Costante di Hall}{V = V_{0} + #frac{R_{H} i B}{t}};i [mA];V_{H} [mV]");
         std_graph_settings(*graph);
     
         canvas2->cd(i+1);
@@ -269,15 +282,34 @@ void analysis3()
     canvas2->SaveAs("../graphs/tensione_hall1.jpg");
     canvas2->SaveAs("../graphs/tensione_hall1.pdf");
 
+    //////////////// CHECK
+
+    cout << endl << "CHECK " << endl;
+    for(int i=0; i<a1.size(); i++)
+    {
+        cout << a1.at(i) << "\t" << sa1.at(i) << "\t" << b1.at(i) << "\t" << sb1.at(i) << endl;
+    }
+
+
     /////////////////////////////////// HALL CONSTANT ////////////////////////////////////////////// 
     
     const float t = 1.;                              // thickness of sample
     const float st = 0.1;
+    const float I[] = {0.3, 0.6, 0.9, 1.2, 1.5, -0.3, -0.6, -0.9, -1.2, -1.5};
+    float sI[sets1], B[sets1], sB[sets1];
+    const float a_tilde = 6.;
+    const float sa_tilde = 0.;
+    const float b_tilde = 204.;
+    const float sb_tilde = 0.;
     
     vector<float> R_H, sR_H, inv_sRH_squared, RH_over_sRHsquared;
 
     for (int i = 0; i < sets1; i++)
     {
+        sI[i] = 0.006 * I[i] + 0.02;
+        B[i] = a_tilde + b_tilde * I[i];
+        sB[i] = sqrt(sa_tilde*sa_tilde + pow(sb_tilde*I[i], 2) + pow(b_tilde*sI[i], 2));
+
         R_H.push_back(b1.at(i) * t / B[i]);
         sR_H.push_back(sqrt(pow(sb1.at(i)*t/B[i], 2) + pow(b1.at(i)*st/B[i], 2) + pow(b1.at(i)*t*sB[i]/(B[i]*B[i]), 2)));
         
@@ -305,28 +337,47 @@ void analysis3()
     canvas2_->SetGrid();
     canvas2_->Divide(1,2);
 
-    const int iter1[] = {0, sets1/2, sets1};
+    const int iter1[] = {0, 5, 10};
 
     vector<float> R_H1_fit, sR_H1_fit;
 
     for (int i = 0; i < 2; i++)
-    {
-        vector<float> sub_b1(b1.begin()+iter1[i], b1.begin()+iter1[i+1]);
-        vector<float> sub_sb1(sb1.begin()+iter1[i], sb1.begin()+iter1[i+1]);
-        vector<float> sub_B, sub_sB;
-        
-        for(int j = iter1[i]; j < iter1[i+1]; j++)
+    {   
+        vector<float> sub_b1, sub_sb1, sub_B, sub_sB;
+
+        if(i==0)
         {
-            sub_B.push_back(B[j]);
-            sub_sB.push_back(sB[j]);
+            for(int j=0; j<5; j++)
+            {
+                sub_b1.push_back(b1.at(j));
+                sub_sb1.push_back(sb1.at(j));
+                sub_B.push_back(B[j]);
+                sub_sB.push_back(sB[j]);
+            }
+        }
+        if(i==1)
+        {
+            for(int j=5; j<10; j++)
+            {
+                sub_b1.push_back(b1.at(j));
+                sub_sb1.push_back(sb1.at(j));
+                sub_B.push_back(B[j]);
+                sub_sB.push_back(sB[j]);
+            }
         }
 
-        TF1 * tf = new TF1("tf", "[0]+[1]*x", -15, 15);
+        cout << endl << "CHECK 2 " << endl;
+        for(int i=0; i<sub_b1.size(); i++)
+        {
+            cout << sub_b1.at(i) << "\t" << sub_sb1.at(i) << "\t" << sub_B.at(i) << "\t" << sub_sB.at(i) << endl;
+        }
+
+        TF1 * tf = new TF1("tf", "[0]+[1]*x", -400, 400);
         tf->SetLineColor(38);
         tf->SetParNames("b_{0}", "#frac{R_{H}}{t}");
 
         TGraphErrors * graph = new TGraphErrors(sub_B.size(), &sub_B[0], &sub_b1[0], &sub_sB[0], &sub_sb1[0]);
-        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} B}{t}};B [T];b []");
+        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} B}{t}};B [mT];b []");
         std_graph_settings(*graph);
     
         canvas2_->cd(i+1);
@@ -378,38 +429,38 @@ void analysis3()
     file.open("../data/VHiconst.txt");
     for(int i=0; i<first_line; i++) file.ignore(10000, '\n');    
 
-    vector<float> VH2, sVH2, B2, sB2;
+    vector<float> VH2, I2;
     getline(file, names);                                            // store the names of the variables
 
-    if(count_column("../data/VHiconst.txt") == 4)
+    if(count_column("../data/VHiconst.txt") == 2)
     {
-        while (file >> entry1 >> entry2 >> entry3 >> entry4)
+        while (file >> entry1 >> entry2)
         {
             VH2.push_back(entry1);
-            sVH2.push_back(entry2);
-            B2.push_back(entry3);
-            sB2.push_back(entry4);
+            I2.push_back(entry2);
         }
     }
-    else if(count_column("../data/VHiconst.txt") == 6)
+    else if(count_column("../data/VHiconst.txt") == 8)
     {
-        while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6)
+        while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6 >> entry7 >> entry8)
         {
             VH2.push_back(entry1);
-            sVH2.push_back(entry2);
-            B2.push_back(entry3);
-            sB2.push_back(entry4);
+            I2.push_back(entry2);
         }
     }
 
 
     ///////////////////////////// ADD DATA ///////////////////////////////////////////////////////
     
-    const float i2[] = {1., 2., 3., 1., 2., 3.};
-    const float si2[] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
-    const int n2[] = {0, 5, 10, 15, 20, 25, 30};            // position where each subset begins
+    const int sets2 = 6;                                            // number of sub-datasets
 
-    vector<float> VH2_correct, sVH2_correct; 
+    const float i2[] = {1.5, 4.5, 7.5, -1.5, -4.5, -7.5};   // mA
+    float si2[sets2];
+    for(int i=0; i<sets2; i++)  si2[i] = i2[i] * 0.006 + 0.02;
+
+    const int n2[] = {0, 10, 20, 30, 40, 50, 60};            // position where each subset begins
+    vector<float> B2, VH2_correct, sVH2, sI2, sB2, sVH2_correct; 
+
     for(int i = 0; i < VH2.size(); i++)   
     {
         int j;
@@ -420,25 +471,60 @@ void analysis3()
         else if (i < n2[5])     j = 4;
         else                    j = 5;
 
-        entry1 = VH2.at(i) - (chi + omega*i2[j]);
-        entry2 = sqrt(sVH2.at(i)*sVH2.at(i) + schi*schi + i2[j]*i2[j]*somega*somega + omega*omega*si2[j]*si2[j]);
+        entry1 = a_tilde + b_tilde * I2.at(i);
+        B2.push_back(entry1);
 
-        VH2_correct.push_back(entry1);
-        sVH2_correct.push_back(entry2);
+        entry2 = VH2.at(i) - (chi + omega*i2[j]);
+        VH2_correct.push_back(entry2);
+
+        entry3 = VH2.at(i) * 0.02;
+        sVH2.push_back(entry3);
+
+        entry4 = I2.at(i) * 0.002 + 0.03;
+        sI2.push_back(entry4);
+
+        entry5 = sqrt(sa_tilde*sa_tilde + pow(sb_tilde*I2.at(i), 2) + pow(b_tilde*sI2.at(i), 2));
+        sB2.push_back(entry5);
+
+        entry6 = sqrt(sVH2.at(i)*sVH2.at(i) + schi*schi + i2[j]*i2[j]*somega*somega + omega*omega*si2[j]*si2[j]);
+        sVH2_correct.push_back(entry6);
     }
 
-    str1 = "\tVH2_correct[V]";
-    str2 = "\tsVH2_correct[V]";
+    str1 = "\tB2[mT]";
+    str2 = "VH2_correct[mV]";
+    str3 = "\tsVH2[mV]"; 
+    str4 = "\tsI2[mA]";
+    string str5("\tsB2[mT]"), str6("\tsVH2_correct[mV]");
     if(names.find(str1) == string::npos)
     {
-        names += "\tVH2_correct[V]";
-        append_column("../data/VHiconst.txt", "VH2_correct[V]", VH2_correct);
-    }    
+        names += "\tB2[mT]";
+        append_column("../data/VHiconst.txt", "\tB2[mT]", B2);
+    }
     if(names.find(str2) == string::npos)
     {
-        names += "\tsVH2_correct[V]";   
-        append_column("../data/VHiconst.txt", "sVH2_correct[V]", sVH2_correct);
-    }    
+        names += "\tVH2_correct[mV]";   
+        append_column("../data/VHiconst.txt", "\tVH2_correct[mV]", VH2_correct);
+    } 
+    if(names.find(str3) == string::npos)
+    {
+        names += "\tsVH2[mV]";   
+        append_column("../data/VHiconst.txt", "\tsVH2[mV]", sVH2);
+    }     
+    if(names.find(str4) == string::npos)
+    {
+        names += "\tsI2[mA]";   
+        append_column("../data/VHiconst.txt", "\tsI2[mA]", sI2);
+    } 
+    if(names.find(str5) == string::npos)
+    {
+        names += "\tsB2[mT]";   
+        append_column("../data/VHiconst.txt", "\tsB2[mT]", sB2);
+    } 
+    if(names.find(str6) == string::npos)
+    {
+        names += "\tsVH2_correct[mV]";   
+        append_column("../data/VHiconst.txt", "\tsVH2_correct[mV]", sVH2_correct);
+    } 
 
     
 
@@ -453,8 +539,8 @@ void analysis3()
     
     cout << endl << "Dati della misura con B = const:" << endl << names << endl;
     for (int i = 0; i < VH2.size(); i++)   
-        cout << VH2.at(i) << "\t" << sVH2.at(i) << "\t" << B2.at(i) << "\t" << sB2.at(i) << "\t" 
-        << VH2_correct.at(i) << "\t" << sVH2_correct.at(i) << endl;
+        cout << VH2.at(i) << "\t" << I2.at(i) << "\t" << B2.at(i) << "\t" << VH2_correct.at(i) << "\t" 
+        << sVH2.at(i) << "\t" << sI2.at(i) << "\t" << sB2.at(i) << "\t" << sVH2_correct.at(i) << endl;
     cout << endl;
 
     //////////////////////////////// FIT ALL SUB-DATASETS //////////////////////////////////////
@@ -463,7 +549,7 @@ void analysis3()
     canvas3->SetGrid();
     canvas3->Divide(2,3);
 
-    const int sets2 = 6;                                            // number of sub-datasets
+    
 
     vector<float> a2, sa2, b2, sb2;
 
@@ -474,12 +560,12 @@ void analysis3()
         vector<float> sub_B2(B2.begin()+n2[i], B2.begin()+n2[i+1]);
         vector<float> sub_sB2(sB2.begin()+n2[i], sB2.begin()+n2[i+1]);
 
-        TF1 * tf = new TF1("tf", "[0]+[1]*x", -15, 15);
+        TF1 * tf = new TF1("tf", "[0]+[1]*x", -400, 400);
         tf->SetLineColor(38);
         tf->SetParNames("V_{0}", "#frac{R_{H} B}{t}");
 
         TGraphErrors * graph = new TGraphErrors(sub_B2.size(), &sub_B2[0], &sub_VH2correct[0], &sub_sB2[0], &sub_sVH2correct[0]);
-        graph->SetTitle("#splitline{Costante di Hall}{V = V_{0} + #frac{R_{H} i B}{t}};B [T];V_{H} [V]");
+        graph->SetTitle("#splitline{Costante di Hall}{V = V_{0} + #frac{R_{H} i B}{t}};B [mT];V_{H} [V]");
         std_graph_settings(*graph);
     
         canvas3->cd(i+1);
@@ -539,11 +625,11 @@ void analysis3()
         
         for(int j = iter2[i]; j < iter2[i+1]; j++)
         {
-            sub_i2.push_back(B[j]);
-            sub_si2.push_back(sB[j]);
+            sub_i2.push_back(i2[j]);
+            sub_si2.push_back(si2[j]);
         }
 
-        TF1 * tf = new TF1("tf", "[0]+[1]*x", -15, 15);
+        TF1 * tf = new TF1("tf", "[0]+[1]*x", -400, 400);
         tf->SetLineColor(38);
         tf->SetParNames("b_{0}", "#frac{R_{H}}{t}");
 
@@ -567,6 +653,7 @@ void analysis3()
 
     cout << "Z Test: Hall constant - fit results: " << endl;
     z_test(R_H2_fit.at(0), R_H2_fit.at(1), sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2)));
+    cout << endl << (R_H2_fit.at(0) + R_H2_fit.at(1))/2 << " ± " << sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2)) << endl;
 
     
 

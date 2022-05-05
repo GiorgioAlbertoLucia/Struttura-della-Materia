@@ -22,20 +22,20 @@ void analysis4()
 
     //freopen("../output/analysis4.txt", "w", stdout);
     gROOT->SetStyle("Plain");
-    gStyle->SetOptFit(1100);
+    gStyle->SetOptFit(1110);
     gStyle->SetFitFormat("2.2e");
 
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
     
-    const float R_H = 0.;
-    const float sR_H = 0.;
+    const float R_H = 0.00717151;
+    const float sR_H = 0.00102508;
 
-    const float t = 0.;     // z axis
+    const float t = 1.;     // z axis mm
     const float st = 0.;
-    const float d = 0.;     // y axis
+    const float d = 10.;     // y axis mm
     const float sd = 0.;
-    const float l = 0.;     // x axis
+    const float l = 20.;     // x axis mm
     const float sl = 0.;
 
     const char * path = "../data/mobilitàportatori.txt";
@@ -48,14 +48,45 @@ void analysis4()
     string names;
     getline(file, names);                                            // store the names of the variables
 
-    while (file >> entry1 >> entry2 >> entry3 >> entry4)
+    if(count_column(path) == 2)
     {
-        V.push_back(entry1);
-        sV.push_back(entry2);
-        i.push_back(entry3);
-        si.push_back(entry4);
+        while (file >> entry1 >> entry2)
+        {
+            V.push_back(entry1);
+            i.push_back(entry2);
+        }
+    }
+    else if(count_column(path) == 4)
+    {
+        while (file >> entry1 >> entry2 >> entry3 >> entry4)
+        {
+            V.push_back(entry1);
+            i.push_back(entry2);
+        }
     }
     
+    ///////////////////////////// ADD DATA ///////////////////////////////////////////////////////
+    
+    for(int j = 0; j < V.size(); j++)   
+    {
+        entry1 = V.at(j) * 0.02;
+        sV.push_back(entry1);
+
+        entry2 = i.at(j) * 0.002 + 0.03;
+        si.push_back(entry2);
+    }
+
+    string str1("\tsV[mV]"), str2("\tsi[mA]");
+    if(names.find(str1) == string::npos)
+    {
+        names += str1;
+        append_column(path, "\tsV[mV]", sV);
+    }
+    if(names.find(str2) == string::npos)
+    {
+        names += str2;   
+        append_column(path, "\tsi[mA]", si);
+    } 
 
     ////////////////////////// CLOSE FILE ///////////////////////////////////////////////////
     
@@ -67,7 +98,7 @@ void analysis4()
     
     cout << endl << "Dati:" << endl << names << endl;
     for (int j = 0; j < V.size(); j++)   
-        cout << V.at(j) << "\t" << sV.at(j) << "\t" << i.at(j) << "\t" << si.at(j) << endl;
+        cout << V.at(j) << "\t" << i.at(j) << "\t" << sV.at(j) << si.at(j) << endl;
     cout << endl;
     
     
@@ -78,7 +109,7 @@ void analysis4()
     canvas->SetGrid();
     canvas->Divide(1,2);
     
-    const int n[] = {0, 2, 4};    // position where each subset begins
+    const int n[] = {0, 9, 17};    // position where each subset begins
     const int sets = 2;
 
     vector<float> V0, sV0, R, sR;
@@ -92,9 +123,10 @@ void analysis4()
 
         TF1 * tf1 = new TF1("tf1", "[0]+[1]*x", -15, 15);
         tf1->SetLineColor(38);
+        tf1->SetParameter(1, 0.051);
 
         TGraphErrors * graph = new TGraphErrors(sub_i.size(), &sub_i[0], &sub_V[0], &sub_si[0], &sub_sV[0]);
-        graph->SetTitle("#splitline{Mobilità dei portatori}{V = V_{0} + R i};i [mA];V [V]");
+        graph->SetTitle("#splitline{Mobilita dei portatori}{V = V_{0} + R i};i [mA];V [V]");
         std_graph_settings(*graph);
     
         canvas->cd(j+1);
@@ -131,7 +163,7 @@ void analysis4()
     const float mu2 = R_H * sigma2;
     const float smu2 = sqrt(pow(sR_H*sigma2, 2) + pow(R_H*ssigma2, 2));
 
-    z_test(mu1, mu2, sqrt(smu1*smu1 + smu2*smu2));
+    cout << endl << "µ exp = "; z_test(mu1, mu2, sqrt(smu1*smu1 + smu2*smu2));
 
     ///////////////////////////// DISALLINEAMENTO ///////////////////////////
     const float omega = 1;
@@ -144,6 +176,6 @@ void analysis4()
     const float sdx = sqrt(pow(somega*sigma*d*t, 2) + pow(omega*ssigma*d*t, 2) + pow(omega*sigma*sd*t, 2) + 
                         pow(omega*sigma*d*st, 2));
 
-    cout << "Il disallineamento tra i contatti è di (" << dx << " +- " << sdx << ") cm." << endl;
+    cout << "Il disallineamento tra i contatti è di (" << dx << " +- " << sdx << ") mm." << endl;
 
 }

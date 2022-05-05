@@ -18,7 +18,7 @@
 
 using namespace std;
 
-void analysis1()
+void analysis1_2()
 {   
     ///////////////////// MAPPATURA DEL MAGNETE /////////////////////////////////////////////////
 
@@ -33,8 +33,9 @@ void analysis1()
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
     
-    int first_line = comment_lines("../data/mappatura.txt");
-    ifstream file("../data/mappatura.txt");
+    const char * path = "../data/mappatura2.txt";
+    int first_line = comment_lines(path);
+    ifstream file(path);
     for(int i=0; i<first_line; i++) file.ignore(10000, '\n');    
 
     vector<float> x, sx, y, sy, B, sB;
@@ -42,21 +43,51 @@ void analysis1()
     string names;
     getline(file, names);                                            // store the names of the variables
 
-    while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6)
+    if(comment_lines(path) == 5)
     {
-        x.push_back(entry1);
-        sx.push_back(entry2);
-        y.push_back(entry3);
-        sy.push_back(entry4);
-        B.push_back(entry5);
-        sB.push_back(entry6);
+        while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5)
+        {
+            x.push_back(entry1);
+            sx.push_back(entry2);
+            y.push_back(entry3);
+            sy.push_back(entry4);
+            B.push_back(entry5);
+        }
     }
-
+    if(comment_lines(path) == 6)
+    {
+        while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6)
+        {
+            x.push_back(entry1);
+            sx.push_back(entry2);
+            y.push_back(entry3);
+            sy.push_back(entry4);
+            B.push_back(entry5);
+        }
+    }
 
     ///////////////////////////// ADD DATA ///////////////////////////////////////////////////////
     
-    float fix_x = 20;
-    float fix_y = 20;
+    for(int i = 0; i < B.size(); i++)   
+    {
+        entry1 = B.at(i) * 0.05 + 0.1;
+        sB.push_back(entry1);
+    }
+
+    cout << endl << "Dati:" << endl << names << endl;
+    for (int i = 0; i < x.size(); i++)   
+        cout << x.at(i) << "\t" << sx.at(i) << "\t" << y.at(i) << "\t" << sy.at(i) << "\t" << 
+        B.at(i) << "\t\t" << sB.at(i) << endl;
+    cout << endl;
+    
+
+    string str1("\tsB[mT]");
+    if(names.find(str1) == string::npos)
+    {
+        names += str1;
+        append_column(path, "\tsB[mT]", sB);
+    }
+
     vector<float> sub_x, sub_sx, sub_y, sub_sy, Bx, sBx, By, sBy;
 
     for(int i = 0; i < x.size(); i++)   
@@ -99,8 +130,8 @@ void analysis1()
     std_graph_settings(*graph1);
     
     graph1->Draw("apl");
-    canvas1->SaveAs("../graphs/mappatura_x.jpg");
-    canvas1->SaveAs("../graphs/mappatura_x.pdf");
+    canvas1->SaveAs("../graphs/mappatura_x2.jpg");
+    canvas1->SaveAs("../graphs/mappatura_x2.pdf");
 
     TCanvas * canvas2 = new TCanvas("canvas2", "B", 500, 5, 500, 600);
     canvas2->SetGrid();
@@ -110,8 +141,8 @@ void analysis1()
     std_graph_settings(*graph2);
     
     graph2->Draw("apl");
-    canvas2->SaveAs("../graphs/mappatura_y.jpg");
-    canvas2->SaveAs("../graphs/mappatura_y.pdf");
+    canvas2->SaveAs("../graphs/mappatura_y2.jpg");
+    canvas2->SaveAs("../graphs/mappatura_y2.pdf");
 
     TCanvas * canvas3 = new TCanvas("canvas3", "B", 500, 5, 500, 600);
     canvas3->SetGrid();
@@ -120,8 +151,8 @@ void analysis1()
     graph3->SetTitle("#splitline{Mappatura del}{campo magnetico};x [mm];y [mm];B [mT]");
     
     graph3->Draw("surf1");
-    canvas3->SaveAs("../graphs/mappatura_xy.jpg");
-    canvas3->SaveAs("../graphs/mappatura_xy.pdf");
+    canvas3->SaveAs("../graphs/mappatura_xy2.jpg");
+    canvas3->SaveAs("../graphs/mappatura_xy2.pdf");
 
     /*
     Int_t n = x.size();
