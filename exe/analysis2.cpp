@@ -117,22 +117,22 @@ void analysis2()
     {
         if(j == 0)  for(int i = 0; i < I1.size(); i++)   
                         {
-                            entry1 = I1.at(i) * 0.006 + 0.02;
+                            entry1 = abs(I1.at(i)) * 0.002 + 0.003;
                             sI1.push_back(entry1);
                         }
         if(j == 1)  for(int i = 0; i < I2.size(); i++)   
                         {
-                            entry1 = I2.at(i) * 0.006 + 0.02;
+                            entry1 = abs(I2.at(i)) * 0.002 + 0.003;
                             sI2.push_back(entry1);
                         }
         if(j == 2)  for(int i = 0; i < I3.size(); i++)   
                         {
-                            entry1 = I3.at(i) * 0.006 + 0.02;
+                            entry1 = abs(I3.at(i)) * 0.002 + 0.003;
                             sI3.push_back(entry1);
                         }
         if(j == 3)  for(int i = 0; i < I4.size(); i++)   
                         {
-                            entry1 = I4.at(i) * 0.006 + 0.02;
+                            entry1 = abs(I4.at(i)) * 0.002 + 0.003;
                             sI4.push_back(entry1);
                         }
     }
@@ -140,16 +140,16 @@ void analysis2()
     vector<float> sI;
     for(int j = 0; j < 4; j++)
     {
-        if(j == 0)  for(int i = 0; i < I1.size(); i++)  sI.push_back(I1.at(i));
-        if(j == 1)  for(int i = 0; i < I2.size(); i++)  sI.push_back(I2.at(i)); 
-        if(j == 2)  for(int i = 0; i < I3.size(); i++)  sI.push_back(I3.at(i)); 
-        if(j == 3)  for(int i = 0; i < I4.size(); i++)  sI.push_back(I4.at(i));
+        if(j == 0)  for(int i = 0; i < sI1.size(); i++)  sI.push_back(sI1.at(i));
+        if(j == 1)  for(int i = 0; i < sI2.size(); i++)  sI.push_back(sI2.at(i)); 
+        if(j == 2)  for(int i = 0; i < sI3.size(); i++)  sI.push_back(sI3.at(i)); 
+        if(j == 3)  for(int i = 0; i < sI4.size(); i++)  sI.push_back(sI4.at(i));
     }
-    string str1("\tsI1[mA]"), str2("\tsI1[mA]");
+    string str1("\tsI[mA]");
     if(names.find(str1) == string::npos)
     {
-        names += "\tsI1[mA]";
-        append_column(path, "sI1[mA]", sI);
+        names += "\tsI[mA]";
+        append_column(path, "sI[mA]", sI);
     }   
 
 
@@ -296,6 +296,9 @@ void analysis2()
     float f = (d1 + d2)/2;                  // parametro per calibrazione di B. Neglia appunti è b tilde
     float se = abs((c1 - c2)/2);
     float sf = sqrt(sd1*sd1/4 + sd2*sd2/4);
+
+    cout << "Calibrazione B:" << endl << "intercetta: q = " << e << " ± " << se << endl << "coeff angolare: m = " <<
+            f << " ± " << sf << endl; 
     
     // per calcolare ∆B_cal nei prossimi file di analisi dati, tener conto del fatto che 
     // B = e + f * I -> ∆B = ...

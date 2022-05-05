@@ -165,7 +165,7 @@ void analysis_sample()
 
     vector<float> VH2_correct, sVH2_correct;
 
-    for (int i = 0; i < VH.size(); i++)   
+    for (int i = 0; i < VH2.size(); i++)   
     {
         int j;
         if(i < n2[1])       j = 0;
@@ -200,7 +200,7 @@ void analysis_sample()
     ////////////////////////// PRINT OUT DATA /////////////////////////////////////////////////
     
     cout << endl << "Dati:" << endl << names << endl;
-    for (int i = 0; i < VH.size(); i++)   
+    for (int i = 0; i < VH2.size(); i++)   
         cout << VH2.at(i) << "\t" << sVH2.at(i) << "\t" << T2.at(i) << "\t" << sT2.at(i) << "\t" << 
         VH2_correct.at(i) << "\t\t" << sVH2_correct.at(i) << endl;
     cout << endl;

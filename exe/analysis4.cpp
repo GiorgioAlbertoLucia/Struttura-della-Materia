@@ -28,8 +28,8 @@ void analysis4()
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
     
-    const float R_H = 0.00717151;
-    const float sR_H = 0.00102508;
+    const float R_H = 0.00725407;
+    const float sR_H = 0.00196157;
 
     const float t = 1.;     // z axis mm
     const float st = 0.;
@@ -72,7 +72,7 @@ void analysis4()
         entry1 = V.at(j) * 0.02;
         sV.push_back(entry1);
 
-        entry2 = i.at(j) * 0.002 + 0.03;
+        entry2 = i.at(j) * 0.006 + 0.02;
         si.push_back(entry2);
     }
 
@@ -166,8 +166,8 @@ void analysis4()
     cout << endl << "µ exp = "; z_test(mu1, mu2, sqrt(smu1*smu1 + smu2*smu2));
 
     ///////////////////////////// DISALLINEAMENTO ///////////////////////////
-    const float omega = 1;
-    const float somega = 0.1;
+    const float omega = 0.244617;
+    const float somega = 0.0014403;
 
     const float sigma = (sigma1 + sigma2)/2;
     const float ssigma = sqrt(ssigma1*ssigma1 + ssigma2*ssigma2)/2;

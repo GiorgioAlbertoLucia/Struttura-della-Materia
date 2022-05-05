@@ -50,7 +50,7 @@ void analysis5()
         while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6 >> entry7 >> entry8)
         {
             VH.push_back(entry1);
-            I.push_back(entry3);
+            I.push_back(entry2);
         }
     }
 
@@ -59,7 +59,7 @@ void analysis5()
 
     const float V0 = 0.;
     const float sV0 = 0.;
-    const float i = - 0.35;
+    const float i = - 0.35;     // mA
     const float si = 0.03; 
     const float sB_sist = 0.;
 
@@ -82,7 +82,7 @@ void analysis5()
         entry3 = VH.at(j) * 0.02;
         sVH.push_back(entry3);
 
-        entry4 = I.at(j) * 0.002 + 0.03;
+        entry4 = I.at(j) * 0.002 + 0.003;
         sI.push_back(entry4);
 
         entry5 = sqrt( (sa_tilde*sa_tilde + pow(sb_tilde*I.at(j), 2) + pow(b_tilde*sI.at(j), 2)) + sB_sist*sB_sist);
@@ -176,7 +176,7 @@ void analysis5()
     graph2->SetTitle("#splitline{Magnetoresistenza}{R = R_{0} [1 + #mu^2 (B - B_{0})]};B [mT];R [#Omega]");
     std_graph_settings(*graph2);
     
-    graph2->Fit(tf2, "ER");
+    graph2->Fit(tf2, "MR");
     graph2->Draw("ap");
     canvas2->SaveAs("../graphs/magnetoresistenza2.jpg");
     canvas2->SaveAs("../graphs/magnetoresistenza2.pdf");

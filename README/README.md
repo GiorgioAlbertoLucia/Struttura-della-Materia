@@ -12,3 +12,13 @@ Strumentazione;
 - DC Power Supply manual: https://neurophysics.ucsd.edu/courses/physics_120/GW_Instek_GPS-4303_Manual.pdf
 - calibro...
 - ferromagnete kröncke 3B 1012859
+
+Risultati fondamentali:
+
+*   Incertezza geometrica:
+    - semidispersione massima nella regione (5-35)x(5-35)   ∆B = 4.205  mT
+    - semidispersione massima nella regione (10-30)x(10-30) ∆B = 1.67   mT
+
+*   Calibrazione B:
+    intercetta: q = 0.20636 ± 6.18027
+    coeff angolare: m = 206.022 ± 103.011
