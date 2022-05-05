@@ -22,7 +22,7 @@ void analysis3()
 
     ///////////////////// SET OUTPUT IN A FILE AND OTHER GENERAL SETTINGS ///////////////////////
 
-    // freopen("../output/analysis3.txt", "w", stdout);
+    freopen("../output/analysis3.txt", "w", stdout);
     gROOT->SetStyle("Plain");
     gStyle->SetOptFit(1110);
     gStyle->SetFitFormat("2.2e");
