@@ -57,17 +57,17 @@ void analysis5()
 
     ///////////////////////////// ADD DATA ///////////////////////////////////////////////////////
 
-    const float V0 = 0.;
-    const float sV0 = 0.;
-    const float i = - 0.35;     // mA
+    const float V0 = 0.000000100441;    // mV
+    const float sV0 = 0.00000213145;
+    const float i = - 0.35;             // mA
     const float si = 0.03; 
-    const float sB_sist = 0.;
+    const float sB_sist = 4.205;        // mT
 
     // I -> B
-    const float a_tilde = 6.;
-    const float sa_tilde = 0.;
-    const float b_tilde = 204.;
-    const float sb_tilde = 0.;
+    const float a_tilde = 0.20636;      // mT
+    const float sa_tilde = 6.18027;
+    const float b_tilde = 206.022;      // mT / A
+    const float sb_tilde = 103.011;
 
     vector<float> R, sR;
     
@@ -77,15 +77,16 @@ void analysis5()
         B.push_back(entry1);
         
         entry2 = (VH.at(j) - V0)/i;
-        R.push_back(entry1);
+        R.push_back(entry2);
 
-        entry3 = VH.at(j) * 0.02;
+        entry3 = abs(VH.at(j)) * 0.02;
         sVH.push_back(entry3);
 
-        entry4 = I.at(j) * 0.002 + 0.003;
+        entry4 = 0.01;
         sI.push_back(entry4);
 
-        entry5 = sqrt( (sa_tilde*sa_tilde + pow(sb_tilde*I.at(j), 2) + pow(b_tilde*sI.at(j), 2)) + sB_sist*sB_sist);
+        entry5 = sqrt( (sa_tilde*sa_tilde + pow(b_tilde*sI.at(j), 2)) + sB_sist*sB_sist);
+        //entry5 = sqrt( (sa_tilde*sa_tilde + pow(sb_tilde*I.at(j), 2) + pow(b_tilde*sI.at(j), 2)) + sB_sist*sB_sist);
         sB.push_back(entry5);
 
         entry6 = sqrt(pow(sVH.at(j)/i, 2) + pow(sV0/i, 2) + pow(si*(VH.at(j)-V0)/(i*i), 2));
@@ -144,10 +145,9 @@ void analysis5()
     TCanvas * canvas1 = new TCanvas("canvas1", "magnetoresistenza", 500, 5, 500, 600);
     canvas1->SetGrid();
     
-    TF1 * tf1 = new TF1("tf1", "[0] + [1]*x*x", -15, 15);
+    TF1 * tf1 = new TF1("tf1", "[0] + [1]*x*x", -400, 400);
     tf1->SetLineColor(38);
     tf1->SetParName(0, "R_{0}");
-    tf1->SetParameter(1, 1);
 
     TGraphErrors * graph1 = new TGraphErrors(B.size(), &B[0], &R[0], &sB[0], &sR[0]);
     graph1->SetTitle("#splitline{Magnetoresistenza}{R = R_{0} + p_{1} B^2};B [mT];R [#Omega]");
@@ -164,16 +164,14 @@ void analysis5()
     /////////////////////////////// FIT FORMA FORNITA //////////////////////////////////////////////////////
     
     TCanvas * canvas2 = new TCanvas("canvas2", "magnetoresistenza", 500, 5, 500, 600);
-    canvas1->SetGrid();
+    canvas2->SetGrid();
     
-    TF1 * tf2 = new TF1("tf2", "[0]*(1+[1]*(x-[2]))", -15, 15);
+    TF1 * tf2 = new TF1("tf2", "[0]*(1+[1]*(x-[2])*(x-[2]))", -400, 400);
     tf2->SetLineColor(38);
     tf2->SetParNames("R_{0}", "#mu^2", "B_{0}");
-    tf2->SetParameter(1, 1);
-    tf2->SetParameter(2, 5);
 
     TGraphErrors * graph2 = new TGraphErrors(B.size(), &B[0], &R[0], &sB[0], &sR[0]);
-    graph2->SetTitle("#splitline{Magnetoresistenza}{R = R_{0} [1 + #mu^2 (B - B_{0})]};B [mT];R [#Omega]");
+    graph2->SetTitle("#splitline{Magnetoresistenza}{R = R_{0} [1 + #mu^{2} (B - B_{0})^{2}]};B [mT];R [#Omega]");
     std_graph_settings(*graph2);
     
     graph2->Fit(tf2, "MR");

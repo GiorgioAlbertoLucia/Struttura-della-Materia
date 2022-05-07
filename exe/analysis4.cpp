@@ -28,8 +28,8 @@ void analysis4()
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
     
-    const float R_H = 0.00725407;
-    const float sR_H = 0.00196157;
+    const float R_H = 0.725407;   // V T / (A cm)
+    const float sR_H = 0.196157;
 
     const float t = 0.1;    // z axis cm
     const float d = 1.;     // y axis cm
@@ -66,10 +66,10 @@ void analysis4()
     
     for(int j = 0; j < V.size(); j++)   
     {
-        entry1 = V.at(j) * 0.02;
+        entry1 = abs(V.at(j)) * 0.02;
         sV.push_back(entry1);
 
-        entry2 = i.at(j) * 0.006 + 0.02;
+        entry2 = abs(i.at(j)) * 0.006 + 0.02;
         si.push_back(entry2);
     }
 
@@ -121,6 +121,7 @@ void analysis4()
         TF1 * tf1 = new TF1("tf1", "[0]+[1]*x", -15, 15);
         tf1->SetLineColor(38);
         tf1->SetParameter(1, 0.051);
+        tf1->SetParNames("V_{0} [V]", "R [m #Omega]");
 
         TGraphErrors * graph = new TGraphErrors(sub_i.size(), &sub_i[0], &sub_V[0], &sub_si[0], &sub_sV[0]);
         graph->SetTitle("#splitline{Mobilita dei portatori}{V = V_{0} + R i};i [mA];V [V]");
@@ -147,32 +148,34 @@ void analysis4()
     z_test(V0.at(0), 0, sV0.at(0));
     z_test(V0.at(1), 0, sV0.at(1));
 
+    cout << "V0 medio: (" << (V0.at(0)+V0.at(1))/2 << " ± " << sqrt(sV0.at(0)*sV0.at(0) + sV0.at(1)*sV0.at(1)) << ") V" << endl;
+
     cout << "Resistenza (Ohm): " << endl;
     for (int i = 0; i < R.size(); i++)  cout << " (" << R.at(i) << " ± " << sR.at(i) << ") Ω" << endl;
     
-    const float sigma1 = (t * d)/(R.at(0) * l);
-    const float ssigma1 = t*d*sR.at(0)/(R.at(0)*R.at(0)*l);
+    const float sigma1 = (l)/(R.at(0) * t * d);                 // cm^-1 Ω^-1
+    const float ssigma1 = l*sR.at(0)/(R.at(0)*R.at(0)*t*d);
 
-    const float sigma2 = (t * d)/(R.at(1) * l);
-    const float ssigma2 = t*d*sR.at(1)/(R.at(1)*R.at(1)*l);
+    const float sigma2 = (l)/(R.at(1) * t * d);                 // cm^-1 Ω^-1
+    const float ssigma2 = l*sR.at(1)/(R.at(1)*R.at(1)*t*d);
 
-    const float mu1 = R_H * sigma1;
+    const float mu1 = R_H * sigma1;                             // m^2 / (V s)
     const float smu1 = sqrt(pow(sR_H*sigma1, 2) + pow(R_H*ssigma1, 2));
-    const float mu2 = R_H * sigma2;
+    const float mu2 = R_H * sigma2;                             // m^2 / (V s)
     const float smu2 = sqrt(pow(sR_H*sigma2, 2) + pow(R_H*ssigma2, 2));
 
-    cout << endl << "µ exp = "; z_test(mu1, mu2, sqrt(smu1*smu1 + smu2*smu2));
+    cout << endl << "µ exp = "; z_test(mu1, mu2, sqrt(smu1*smu1 + smu2*smu2)); cout << " m^2 / (V s) " << endl;
 
     ///////////////////////////// DISALLINEAMENTO ///////////////////////////
     const float omega = 0.244617;
     const float somega = 0.0014403;
 
-    const float sigma = (sigma1 + sigma2)/2;
+    const float sigma = (sigma1 + sigma2)/2;                    // cm^-1 Ω^-1 
     const float ssigma = sqrt(ssigma1*ssigma1 + ssigma2*ssigma2)/2;
 
     const float dx = omega * sigma * d * t;
     const float sdx = sqrt(pow(somega*sigma*d*t, 2) + pow(omega*ssigma*d*t, 2));
 
-    cout << "Il disallineamento tra i contatti è di (" << dx << " +- " << sdx << ") mm." << endl;
+    cout << "Il disallineamento tra i contatti è di (" << dx << " +- " << sdx << ") cm." << endl;
 
 }

@@ -217,8 +217,8 @@ CHECK
 -0.036779	0.0201802	0.865167	0.00849254
 -0.0374803	0.0284739	1.27323	0.0116827
 -0.0313848	0.0351669	1.59972	0.0142357
-Z test: Hall constant R_H, B = const 
-0.00741129 +/- 0.00173619	0.00022197	4.14086	False
+Z test: Hall constant R_H [mV cm / (mT mA)], B = const 
+0.000741106 +/- 0.000170279	2.21226e-05	4.22239	False
 
 CHECK 2 
 0.527132	0.0058932	62.013	31.5682
@@ -249,8 +249,8 @@ CHECK 2
    2  #frac{R_{H}}{t}  -7.01932e-03   2.94797e-03   2.94797e-03   7.08947e-03
 Chi^2:0.0142242, number of DoF: 3 (Probability: 0.999551).
 
-Z Test: Hall constant - fit results: 
-0.00664045 +/- 0.00417035	-0.00701932	3.27545	False
+Z Test: Hall constant R_H [mV cm / (mT mA)] - fit results: 
+0.000664045 +/- 0.000405687	-0.000701932	3.36707	False
 
 Dati della misura con B = const:
 VH2[mV]         I2[A]			B2[mT]          VH2_correct[mV]		sVH2[mV]		sI2[mA]		sB2[mT]		sVH2_correct[mV]
@@ -363,8 +363,8 @@ Chi^2:0.0589357, number of DoF: 8 (Probability: 1).
    2  #frac{R_{H} B}{t}  -5.43287e-02   8.65401e-03   8.65401e-03   1.05650e-03
 Chi^2:0.0432093, number of DoF: 8 (Probability: 1).
 
-Z test: Hall constant R_H, i = const 
-0.00726518 +/- 0.0011159	0.00724436	0.0186578	True
+Z test: Hall constant R_H [mV cm / (mT mA)], i = const 
+0.000726515 +/- 9.45693e-05	0.000724436	0.0219778	True
  FCN=4.31135e-05 FROM MINOS     STATUS=SUCCESSFUL     14 CALLS          84 TOTAL
                      EDM=1.09119e-11    STRATEGY= 1      ERROR MATRIX ACCURATE 
   EXT PARAMETER                                   STEP         FIRST   
@@ -381,7 +381,7 @@ Chi^2:4.31135e-05, number of DoF: 1 (Probability: 0.994761).
    2  #frac{R_{H}}{t}   7.27289e-03   1.18060e-03   1.18060e-03   1.32202e-04
 Chi^2:0.000602301, number of DoF: 1 (Probability: 0.98042).
 
-Z Test: Hall constant - fit results: 
-0.00723524 +/- 0.00196157	0.00727289	-0.0191943	True
+Z Test: Hall constant R_H [mV cm / (mT mA)] - fit results: 
+0.000723524 +/- 0.000167192	0.000727289	-0.0225196	True
 
-0.00725407 ± 0.00196157
+0.000725407 ± 0.000167192

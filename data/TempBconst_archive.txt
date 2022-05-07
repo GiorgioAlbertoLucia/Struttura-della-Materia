@@ -1,0 +1,56 @@
+# Misurazione della tensione di Hall per temperature variabili. Le temperature sono lette tramite un elemento Pt100
+# Le correnti fatte passare nell'elemento di misurazione sono nel range i = 8.00 mA
+#
+# Le misurazioni sono effettuate per valori di corrente costante nel toroide: I = 1.52 A
+# 
+#   IDM 103N Datasheet (Amperometro): https://www.sglabs.it/public/Iso-Tech_IDM103N.pdf
+#   errori sulle tensioni di Hall: 2% della misura
+#   
+#   set-1 salita (T=0 -> T=140) --- set-2 discesa (T=140 -> T=0)
+#   n1 = 
+#   n2 = 
+#
+#   VH[mV]  R[Ω]    i[A]    T[K]    VH_corr[mV] sVH[mV] sR[Ω]   sI[A]   sT[K]   sVH_corr[mV]    
+#
+VH[]            R[Ω]            i[A]
+19.46           110.7           0.35
+19.58           113.0           0.60
+19.69           115.0           0.69
+19.75           117.0           0.69
+19.63           119.0           0.69
+19.46           121.0           0.78
+19.05           123.0           0.81
+18.45           125.0           0.99
+17.47           127.0           0.99
+16.13           129.0           1.05
+14.31           131.0           1.04
+12.05           133.0           1.04
+9.82            135.0           1.18
+7.32            137.0           1.17
+5.36            139.0           1.15
+4.12            141.0           1.25
+3.00            143.0           1.24
+2.21            145.0           1.23
+0.73            147.0           1.30
+0.16            149.0           1.30
+-0.43           151.0           1.50
+-0.18           149.0           1.03
+0.10            147.0           1.03
+0.70            145.0           1.03
+1.69            143.0           1.01
+3.02            141.0           1.00
+4.77            139.0           0.93
+6.90            137.0           0.80
+9.35            135.0           0.77
+11.69           133.0           0.77
+13.85           131.0           0.70
+15.63           129.0           0.57
+17.00           127.0           0.52
+17.96           125.0           0.45
+18.57           123.0           0.30
+18.91           121.0           0.30
+19.07           119.0           0.19
+19.07           117.0           0.02
+18.99           115.0           0.00
+18.85           113.0           0.00
+18.69           111.3           0.00        

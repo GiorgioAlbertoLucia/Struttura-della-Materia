@@ -22,7 +22,7 @@ void analysis3()
 
     ///////////////////// SET OUTPUT IN A FILE AND OTHER GENERAL SETTINGS ///////////////////////
 
-    //freopen("../output/analysis3.txt", "w", stdout);
+    freopen("../output/analysis3.txt", "w", stdout);
     gROOT->SetStyle("Plain");
     gStyle->SetOptFit(1110);
     gStyle->SetFitFormat("2.2e");
@@ -264,8 +264,7 @@ void analysis3()
 
     /////////////////////////////////// HALL CONSTANT //////////////////////////////////////////////
 
-    const float t = 1.; // thickness of sample
-    const float st = 0.1;
+    const float t = 0.1; // thickness of sample -- cm
     const float I[] = {0.3, 0.6, 0.9, 1.2, 1.5, -0.3, -0.6, -0.9, -1.2, -1.5};
     float sI[sets1], B[sets1], sB[sets1];
     const float a_tilde = 0.20636;      // mT
@@ -283,7 +282,7 @@ void analysis3()
         sB[i] = sqrt((sa_tilde * sa_tilde + pow(sb_tilde * I[i], 2) + pow(b_tilde * sI[i], 2)) + sB_geom * sB_geom);
 
         R_H.push_back(b1.at(i) * t / B[i]);
-        sR_H.push_back(sqrt(pow(sb1.at(i) * t / B[i], 2) + pow(b1.at(i) * st / B[i], 2) + pow(b1.at(i) * t * sB[i] / (B[i] * B[i]), 2)));
+        sR_H.push_back(sqrt(pow(sb1.at(i) * t / B[i], 2) + pow(b1.at(i) * t * sB[i] / (B[i] * B[i]), 2)));
 
         inv_sRH_squared.push_back(pow(sR_H.at(i), -2)); // will be used for the weighted average
         RH_over_sRHsquared.push_back(R_H.at(i) * inv_sRH_squared.at(i));
@@ -299,7 +298,7 @@ void analysis3()
                        accumulate(inv_sRH_squared.begin() + 5, inv_sRH_squared.end(), 0.);
     const float sR_H2 = sqrt(1 / accumulate(inv_sRH_squared.begin() + 5, inv_sRH_squared.end(), 0.));
 
-    cout << "Z test: Hall constant R_H, B = const " << endl;
+    cout << "Z test: Hall constant R_H [mV cm / (mT mA)], B = const " << endl;
     z_test(R_H1, R_H2, sqrt(sR_H1 * sR_H1 + sR_H2 * sR_H2));
 
     /////////////////////////// HALL CONSTANT - FIT //////////////////////////////////
@@ -360,14 +359,56 @@ void analysis3()
              << endl;
 
         R_H1_fit.push_back(tf->GetParameter(1) * t);
-        sR_H1_fit.push_back(sqrt(pow(tf->GetParError(1) * t, 2) + pow(tf->GetParameter(1) * st, 2)));
+        sR_H1_fit.push_back(tf->GetParError(1) * t);
     }
 
     canvas2_->SaveAs("../graphs/coeff_Hall1.jpg");
     canvas2_->SaveAs("../graphs/coeff_Hall1.pdf");
 
-    cout << "Z Test: Hall constant - fit results: " << endl;
+    cout << "Z Test: Hall constant R_H [mV cm / (mT mA)] - fit results: " << endl;
     z_test(R_H1_fit.at(0), R_H1_fit.at(1), sqrt(pow(sR_H1_fit.at(0), 2) + pow(sR_H1_fit.at(1), 2)));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     ///////////////////// PART 3: i = const //////////////////////////////////////
 
@@ -375,8 +416,7 @@ void analysis3()
 
     first_line = comment_lines("../data/VHiconst.txt");
     file.open("../data/VHiconst.txt");
-    for (int i = 0; i < first_line; i++)
-        file.ignore(10000, '\n');
+    for (int i = 0; i < first_line; i++)    file.ignore(10000, '\n');
 
     vector<float> VH2, I2;
     getline(file, names); // store the names of the variables
@@ -534,7 +574,7 @@ void analysis3()
     for (int i = 0; i < sets2; i++)
     {
         R_H_.push_back(b2.at(i) * t / i2[i]);
-        sR_H_.push_back(sqrt(pow(sb2.at(i) * t / i2[i], 2) + pow(b2.at(i) * st / i2[i], 2) + pow(b2.at(i) * t * si2[i] / (i2[i] * i2[i]), 2)));
+        sR_H_.push_back(sqrt(pow(sb2.at(i) * t / i2[i], 2) + pow(b2.at(i) * t * si2[i] / (i2[i] * i2[i]), 2)));
 
         inv_sRH_squared_.push_back(pow(sR_H_.at(i), -2)); // will be used for the weighted average
         RH_over_sRHsquared_.push_back(R_H_.at(i) * inv_sRH_squared_.at(i));
@@ -548,7 +588,7 @@ void analysis3()
                         accumulate(inv_sRH_squared_.begin() + 3, inv_sRH_squared_.end(), 0.);
     const float sR_H2_ = sqrt(1 / accumulate(inv_sRH_squared_.begin() + 3, inv_sRH_squared_.end(), 0.));
 
-    cout << "Z test: Hall constant R_H, i = const " << endl;
+    cout << "Z test: Hall constant R_H [mV cm / (mT mA)], i = const " << endl;
     z_test(R_H1_, R_H2_, sqrt(sR_H1_ * sR_H1_ + sR_H2_ * sR_H2_));
 
     /////////////////////////// HALL CONSTANT - FIT //////////////////////////////////
@@ -588,13 +628,13 @@ void analysis3()
              << endl;
 
         R_H2_fit.push_back(tf->GetParameter(1) * t);
-        sR_H2_fit.push_back(sqrt(pow(tf->GetParError(1) * t, 2) + pow(tf->GetParameter(1) * st, 2)));
+        sR_H2_fit.push_back(tf->GetParError(1) * t);
     }
 
     canvas3_->SaveAs("../graphs/coeff_Hall2.jpg");
     canvas3_->SaveAs("../graphs/coeff_Hall2.pdf");
 
-    cout << "Z Test: Hall constant - fit results: " << endl;
+    cout << "Z Test: Hall constant R_H [mV cm / (mT mA)] - fit results: " << endl;
     z_test(R_H2_fit.at(0), R_H2_fit.at(1), sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2)));
     cout << endl
          << (R_H2_fit.at(0) + R_H2_fit.at(1)) / 2 << " ± " << sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2)) << endl;

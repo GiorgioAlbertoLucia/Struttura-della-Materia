@@ -25,7 +25,7 @@ void analysis2()
 
     //freopen("../output/analysis2.txt", "w", stdout);
     gROOT->SetStyle("Plain");
-    gStyle->SetOptFit(1100);
+    gStyle->SetOptFit(1110);
     gStyle->SetFitFormat("2.2e");
 
 
