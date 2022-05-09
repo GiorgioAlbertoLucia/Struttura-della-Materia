@@ -104,7 +104,7 @@ void analysis3()
     tf1->SetLineColor(38);
 
     TGraphErrors *graph1 = new TGraphErrors(i0.size(), &i0[0], &VH0[0], &si0[0], &sVH0[0]);
-    graph1->SetTitle("#splitline{Misure di riferimento}{V = p_{0} + p_{1} i};i [A];V_{H} [V]");
+    graph1->SetTitle("#splitline{Misure di riferimento}{V = p_{0} + p_{1} i};i [mA];V_{H} [mV]");
     std_graph_settings(*graph1);
 
     graph1->Fit(tf1, "ER");
@@ -123,12 +123,58 @@ void analysis3()
     cout << endl
          << endl
          << "Parametri della retta di calibrazione del campo di Hall:" << endl
-         << "chi (intercetta): (" << chi << " ± " << schi << ") V" << endl
-         << "omega (coeff angolare): (" << omega << " ± " << somega << ") Ω" << endl; 
+         << "chi (intercetta): (" << chi << " ± " << schi << ") mV" << endl
+         << "omega (coeff angolare): (" << omega << " ± " << somega << ") Ω" << endl;   // mV / mA
 
-        ///////////////////// PART 2: B = const //////////////////////////////////////
 
-        ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    ///////////////////// PART 2: B = const //////////////////////////////////////
+
+    ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
 
         first_line = comment_lines("../data/VHBconst.txt");
     file.open("../data/VHBconst.txt");
@@ -160,13 +206,13 @@ void analysis3()
     vector<float> VH1_correct, sVH1, si1, sVH1_correct;
     for (int i = 0; i < VH1.size(); i++)
     {
-        entry1 = VH1.at(i) - (chi + omega * i1.at(i));
+        entry1 = VH1.at(i) - (chi + omega * i1.at(i));      // mV
         VH1_correct.push_back(entry1);
 
         entry2 = VH1.at(i) * 0.02;
         sVH1.push_back(entry2);
 
-        entry3 = i1.at(i) * 0.006 + 0.03;
+        entry3 = i1.at(i) * 0.006 + 0.03;                   // mA
         si1.push_back(entry3);
 
         entry4 = sqrt(sVH1.at(i) * sVH1.at(i) + schi * schi + i1.at(i) * i1.at(i) * somega * somega + omega * omega * si1.at(i) * si1.at(i));
@@ -244,9 +290,9 @@ void analysis3()
         cout << "Chi^2:" << tf->GetChisquare() << ", number of DoF: " << tf->GetNDF() << " (Probability: " << tf->GetProb() << ")." << endl
              << endl;
 
-        a1.push_back(tf->GetParameter(0));
+        a1.push_back(tf->GetParameter(0));      // mV
         sa1.push_back(tf->GetParError(0));
-        b1.push_back(tf->GetParameter(1));
+        b1.push_back(tf->GetParameter(1));      // mV / mA
         sb1.push_back(tf->GetParError(1));
     }
 
@@ -264,24 +310,24 @@ void analysis3()
 
     /////////////////////////////////// HALL CONSTANT //////////////////////////////////////////////
 
-    const float t = 0.1; // thickness of sample -- cm
-    const float I[] = {0.3, 0.6, 0.9, 1.2, 1.5, -0.3, -0.6, -0.9, -1.2, -1.5};
+    const float t = 0.1;                                                            // thickness of sample -- cm
+    const float I[] = {0.3, 0.6, 0.9, 1.2, 1.5, -0.3, -0.6, -0.9, -1.2, -1.5};      // A
     float sI[sets1], B[sets1], sB[sets1];
-    const float a_tilde = 0.20636;      // mT
-    const float sa_tilde = 6.18027;
-    const float b_tilde = 206.022;      // mT/A
-    const float sb_tilde = 103.011;
-    const float sB_geom = 1.67;         // mT
+    const float a_tilde = 0.275176;                                                 // mT
+    const float sa_tilde = 6.18651;
+    const float b_tilde = 205.948;                                                  // mT/A
+    const float sb_tilde = 0.281825;
+    const float sB_geom = 1.67;                                                     // mT
 
     vector<float> R_H, sR_H, inv_sRH_squared, RH_over_sRHsquared;
 
     for (int i = 0; i < sets1; i++)
     {
         sI[i] = 0.002 * I[i] + 0.003;
-        B[i] = a_tilde + b_tilde * I[i];
+        B[i] = a_tilde + b_tilde * I[i];                                            // mT
         sB[i] = sqrt((sa_tilde * sa_tilde + pow(sb_tilde * I[i], 2) + pow(b_tilde * sI[i], 2)) + sB_geom * sB_geom);
 
-        R_H.push_back(b1.at(i) * t / B[i]);
+        R_H.push_back(b1.at(i) * t / B[i]);                                         // V cm / (A mT)
         sR_H.push_back(sqrt(pow(sb1.at(i) * t / B[i], 2) + pow(b1.at(i) * t * sB[i] / (B[i] * B[i]), 2)));
 
         inv_sRH_squared.push_back(pow(sR_H.at(i), -2)); // will be used for the weighted average
@@ -348,7 +394,7 @@ void analysis3()
         tf->SetParNames("b_{0}", "#frac{R_{H}}{t}");
 
         TGraphErrors *graph = new TGraphErrors(sub_B.size(), &sub_B[0], &sub_b1[0], &sub_sB[0], &sub_sb1[0]);
-        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} B}{t}};B [mT];b []");
+        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} B}{t}};B [mT];b [mV/mA]");
         std_graph_settings(*graph);
 
         canvas2_->cd(i + 1);
@@ -365,7 +411,7 @@ void analysis3()
     canvas2_->SaveAs("../graphs/coeff_Hall1.jpg");
     canvas2_->SaveAs("../graphs/coeff_Hall1.pdf");
 
-    cout << "Z Test: Hall constant R_H [mV cm / (mT mA)] - fit results: " << endl;
+    cout << endl << "Z Test: Hall constant R_H [mV cm / (mT mA)] - fit results: " << endl;
     z_test(R_H1_fit.at(0), R_H1_fit.at(1), sqrt(pow(sR_H1_fit.at(0), 2) + pow(sR_H1_fit.at(1), 2)));
 
 
@@ -459,16 +505,16 @@ void analysis3()
         else if (i < n2[5])     j = 4;
         else                    j = 5;
 
-        entry1 = a_tilde + b_tilde * I2.at(i);
+        entry1 = a_tilde + b_tilde * I2.at(i);          // mT
         B2.push_back(entry1);
 
-        entry2 = VH2.at(i) - (chi + omega * i2[j]);
+        entry2 = VH2.at(i) - (chi + omega * i2[j]);     // mV
         VH2_correct.push_back(entry2);
 
         entry3 = VH2.at(i) * 0.02;
         sVH2.push_back(entry3);
 
-        entry4 = I2.at(i) * 0.002 + 0.003;
+        entry4 = I2.at(i) * 0.002 + 0.003;              // A
         sI2.push_back(entry4);
 
         entry5 = sqrt((sa_tilde * sa_tilde + pow(sb_tilde * I2.at(i), 2) + pow(b_tilde * sI2.at(i), 2)) + sB_geom * sB_geom);
@@ -481,7 +527,7 @@ void analysis3()
     str1 = "\tB2[mT]";
     str2 = "VH2_correct[mV]";
     str3 = "\tsVH2[mV]";
-    str4 = "\tsI2[mA]";
+    str4 = "\tsI2[A]";
     string str5("\tsB2[mT]"), str6("\tsVH2_correct[mV]");
     if (names.find(str1) == string::npos)
     {
@@ -500,8 +546,8 @@ void analysis3()
     }
     if (names.find(str4) == string::npos)
     {
-        names += "\tsI2[mA]";
-        append_column("../data/VHiconst.txt", "\tsI2[mA]", sI2);
+        names += "\tsI2[A]";
+        append_column("../data/VHiconst.txt", "\tsI2[A]", sI2);
     }
     if (names.find(str5) == string::npos)
     {
@@ -548,7 +594,7 @@ void analysis3()
         tf->SetParNames("V_{0}", "#frac{R_{H} B}{t}");
 
         TGraphErrors *graph = new TGraphErrors(sub_B2.size(), &sub_B2[0], &sub_VH2correct[0], &sub_sB2[0], &sub_sVH2correct[0]);
-        graph->SetTitle("#splitline{Costante di Hall}{V = V_{0} + #frac{R_{H} i B}{t}};B [mT];V_{H} [V]");
+        graph->SetTitle("#splitline{Costante di Hall}{V = V_{0} + #frac{R_{H} i B}{t}};B [mT];V_{H} [mV]");
         std_graph_settings(*graph);
 
         canvas3->cd(i + 1);
@@ -558,9 +604,9 @@ void analysis3()
         cout << "Chi^2:" << tf->GetChisquare() << ", number of DoF: " << tf->GetNDF() << " (Probability: " << tf->GetProb() << ")." << endl
              << endl;
 
-        a2.push_back(tf->GetParameter(0));
+        a2.push_back(tf->GetParameter(0));      // mV
         sa2.push_back(tf->GetParError(0));
-        b2.push_back(tf->GetParameter(1));
+        b2.push_back(tf->GetParameter(1));      // mV / mT
         sb2.push_back(tf->GetParError(1));
     }
 
@@ -573,7 +619,7 @@ void analysis3()
 
     for (int i = 0; i < sets2; i++)
     {
-        R_H_.push_back(b2.at(i) * t / i2[i]);
+        R_H_.push_back(b2.at(i) * t / i2[i]);       // mV cm / (mA mT)
         sR_H_.push_back(sqrt(pow(sb2.at(i) * t / i2[i], 2) + pow(b2.at(i) * t * si2[i] / (i2[i] * i2[i]), 2)));
 
         inv_sRH_squared_.push_back(pow(sR_H_.at(i), -2)); // will be used for the weighted average
@@ -617,7 +663,7 @@ void analysis3()
         tf->SetParNames("b_{0}", "#frac{R_{H}}{t}");
 
         TGraphErrors *graph = new TGraphErrors(sub_i2.size(), &sub_i2[0], &sub_b2[0], &sub_si2[0], &sub_sb2[0]);
-        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} i}{t}};i [A];b []");
+        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} i}{t}};i [mA];b [mV / mT]");
         std_graph_settings(*graph);
 
         canvas3_->cd(i + 1);
@@ -634,8 +680,9 @@ void analysis3()
     canvas3_->SaveAs("../graphs/coeff_Hall2.jpg");
     canvas3_->SaveAs("../graphs/coeff_Hall2.pdf");
 
-    cout << "Z Test: Hall constant R_H [mV cm / (mT mA)] - fit results: " << endl;
+    cout << endl << "Z Test: Hall constant R_H [mV cm / (mT mA)] - fit results: " << endl;
     z_test(R_H2_fit.at(0), R_H2_fit.at(1), sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2)));
-    cout << endl
-         << (R_H2_fit.at(0) + R_H2_fit.at(1)) / 2 << " ± " << sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2)) << endl;
+    cout << endl << "R_H constant: R_H = ("
+         << (R_H2_fit.at(0) + R_H2_fit.at(1)) / 2 << " ± " << sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2)) 
+         << ") "<< endl;
 }

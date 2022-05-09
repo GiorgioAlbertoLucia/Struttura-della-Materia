@@ -20,5 +20,19 @@ Risultati fondamentali:
     - semidispersione massima nella regione (10-30)x(10-30) ∆B = 1.67   mT
 
 *   Calibrazione B:
-    intercetta: q = 0.20636 ± 6.18027       mT
-    coeff angolare: m = 206.022 ± 103.011   mT / A
+    intercetta: q = 0.275176 ± 6.18651      mT
+    coeff angolare: m = 205.948 ± 0.281825  mT / A
+
+*   Calibrazione V_H:
+    intercetta: chi = (0.00358919 ± 0.00311184) mV
+    coeff angolare: omega = (0.244617 ± 0.0014403) Ω
+
+*   Regione di linearità del campo magnetico: -1.45 A, 1.45 A
+
+*   Coefficiente di Hall: R_H = (0.00071062 ± 1.50972e-05) mV cm / (mA mT)
+
+*   Mobilità dei portatori
+    µ exp = (0.279635 ± 0.00480695) m^2 / (V s)
+
+*   Disallineamento dei contatti:
+    (0.00962589 ± 9.83958e-05) cm

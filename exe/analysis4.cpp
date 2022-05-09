@@ -20,7 +20,7 @@ void analysis4()
 {   
     ///////////////////// SET OUTPUT IN A FILE AND OTHER GENERAL SETTINGS ///////////////////////
 
-    //freopen("../output/analysis4.txt", "w", stdout);
+    freopen("../output/analysis4.txt", "w", stdout);
     gROOT->SetStyle("Plain");
     gStyle->SetOptFit(1110);
     gStyle->SetFitFormat("2.2e");
@@ -28,12 +28,12 @@ void analysis4()
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
     
-    const float R_H = 0.725407;   // V T / (A cm)
-    const float sR_H = 0.196157;
+    const float R_H = 0.71062;                  // V T / (A cm)
+    const float sR_H = 1.50972e-02;
 
-    const float t = 0.1;    // z axis cm
-    const float d = 1.;     // y axis cm
-    const float l = 2.;     // x axis cm
+    const float t = 0.1;                        // z axis cm
+    const float d = 1.;                         // y axis cm
+    const float l = 2.;                         // x axis cm
 
     const char * path = "../data/mobilitàportatori.txt";
     int first_line = comment_lines(path);
@@ -134,7 +134,7 @@ void analysis4()
         cout << "Chi^2:" << tf1->GetChisquare() << ", number of DoF: " << tf1->GetNDF() << 
         " (Probability: " << tf1->GetProb() << ")." << endl;
 
-        V0.push_back(tf1->GetParameter(0));
+        V0.push_back(tf1->GetParameter(0));         // V
         sV0.push_back(tf1->GetParError(0));
         R.push_back(tf1->GetParameter(1)*1000);     // ohm
         sR.push_back(tf1->GetParError(1)*1000);
@@ -150,7 +150,7 @@ void analysis4()
 
     cout << "V0 medio: (" << (V0.at(0)+V0.at(1))/2 << " ± " << sqrt(sV0.at(0)*sV0.at(0) + sV0.at(1)*sV0.at(1)) << ") V" << endl;
 
-    cout << "Resistenza (Ohm): " << endl;
+    cout << "Resistenza: " << endl;
     for (int i = 0; i < R.size(); i++)  cout << " (" << R.at(i) << " ± " << sR.at(i) << ") Ω" << endl;
     
     const float sigma1 = (l)/(R.at(0) * t * d);                 // cm^-1 Ω^-1
@@ -164,10 +164,11 @@ void analysis4()
     const float mu2 = R_H * sigma2;                             // m^2 / (V s)
     const float smu2 = sqrt(pow(sR_H*sigma2, 2) + pow(R_H*ssigma2, 2));
 
-    cout << endl << "µ exp = "; z_test(mu1, mu2, sqrt(smu1*smu1 + smu2*smu2)); cout << " m^2 / (V s) " << endl;
+    z_test(mu1, mu2, sqrt(smu1*smu1 + smu2*smu2)); cout << " m^2 / (V s) " << endl;
+    cout << endl << "µ exp = (" << (mu1+mu2)/2 << " ± " << sqrt(smu1*smu1 + smu2*smu2)/2 << ") m^2 / (V s) " << endl; 
 
     ///////////////////////////// DISALLINEAMENTO ///////////////////////////
-    const float omega = 0.244617;
+    const float omega = 0.244617;                               // Ω (dalla calibrazione in analysis3)
     const float somega = 0.0014403;
 
     const float sigma = (sigma1 + sigma2)/2;                    // cm^-1 Ω^-1 
@@ -176,6 +177,6 @@ void analysis4()
     const float dx = omega * sigma * d * t;
     const float sdx = sqrt(pow(somega*sigma*d*t, 2) + pow(omega*ssigma*d*t, 2));
 
-    cout << "Il disallineamento tra i contatti è di (" << dx << " +- " << sdx << ") cm." << endl;
+    cout << "Il disallineamento tra i contatti è di (" << dx << " ± " << sdx << ") cm." << endl;
 
 }

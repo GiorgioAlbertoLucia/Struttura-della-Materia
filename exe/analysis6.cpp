@@ -23,7 +23,7 @@ void analysis6()
 
     //freopen("../output/analysis1.txt", "w", stdout);
     gROOT->SetStyle("Plain");
-    gStyle->SetOptFit(1100);
+    gStyle->SetOptFit(1110);
     gStyle->SetFitFormat("2.2e");
     
     /////////////////////////// INTERPOLAZIONE ////////////////////////////////////////////////
@@ -70,8 +70,6 @@ void analysis6()
         R0.push_back(entry10);
     }
 
-    cout << "check " << R0.size() << " " << T0.size() << endl;
-
     ROOT::Math::Interpolator interpolator(R0.size(), ROOT::Math::Interpolation::kCSPLINE);
     interpolator.SetData(R0.size(), &R0[0], &T0[0]);
 
@@ -83,23 +81,24 @@ void analysis6()
     
     const char * path1 = "../data/TempRiferimento.txt";
     first_line = comment_lines(path1);
-    file.open(path1);
-    for(int i=0; i<first_line; i++) file.ignore(10000, '\n');    
+    ifstream file1(path1);
+    for(int i=0; i<first_line; i++) file1.ignore(10000, '\n');    
 
     vector<float> VH1, R1;
-    getline(file, names);                                            // store the names of the variables
+    getline(file1, names);                                            // store the names of the variables
 
+    cout << "first line " << first_line << endl << names << endl;
     if(count_column(path1)==2)
     {
-        while (file >> entry1 >> entry2)
+        while (file1 >> entry1 >> entry2)
         {
             VH1.push_back(entry1);
             R1.push_back(entry2);
         }
     }
-    if(count_column(path1)==6)
+    else if(count_column(path1)==6)
     {
-        while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6)
+        while (file1 >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6)
         {
             VH1.push_back(entry1);          // mV
             R1.push_back(entry2);           // Ω
@@ -107,6 +106,12 @@ void analysis6()
     }
 
     cout << "check " << VH1.size() << endl;
+
+    ////////////////////////// CLOSE FILE ///////////////////////////////////////////////////
+    
+    file1.close();
+
+
     
     /////////////////////////////// ADD DATA ///////////////////////////////////////////////
 
@@ -131,27 +136,25 @@ void analysis6()
     if(names.find(str1) == string::npos)
     {
         names += "\tT[K]";
-        append_column(path1, "T[K]", T1);
+        append_column(path1, "\tT[K]", T1);
     }    
     if(names.find(str2) == string::npos)
     {
         names += "\tsVH[mV]";   
-        append_column(path1, "sVH[mV]", sVH1);
+        append_column(path1, "\tsVH[mV]", sVH1);
     } 
     if(names.find(str3) == string::npos)
     {
         names += "\tsR[Ω]";
-        append_column(path1, "sR[Ω]", sR1);
+        append_column(path1, "\tsR[Ω]", sR1);
     }    
     if(names.find(str4) == string::npos)
     {
         names += "\tsT[K]";   
-        append_column(path1, "sT[K]", sT1);
+        append_column(path1, "\tsT[K]", sT1);
     }
 
-    ////////////////////////// CLOSE FILE ///////////////////////////////////////////////////
     
-    file.close();
     
 
 
@@ -183,7 +186,9 @@ void analysis6()
         vector<float> sub_T1(T1.begin()+n1[i], T1.begin()+n1[i+1]);
         vector<float> sub_sT1(sT1.begin()+n1[i], sT1.begin()+n1[i+1]);
 
-        TF1 * tf1 = new TF1("tf1", "[0]+[1]*x", -15, 15);
+        cout << "check zzzz " << sub_T1.size() << endl; 
+
+        TF1 * tf1 = new TF1("tf1", "[0]+[1]*x", 0, 500);
         tf1->SetLineColor(38);
 
         TGraphErrors * graph1 = new TGraphErrors(sub_T1.size(), &sub_T1[0], &sub_VH1[0], &sub_sT1[0], &sub_sVH1[0]);
@@ -238,15 +243,15 @@ void analysis6()
     
     const char * path2 = "../data/TempBconst.txt";
     first_line = comment_lines(path2);
-    file.open(path2);
-    for(int i=0; i<first_line; i++) file.ignore(10000, '\n');    
+    ifstream file2(path2);
+    for(int i=0; i<first_line; i++) file2.ignore(10000, '\n');    
 
     vector<float> VH2, R2;
-    getline(file, names);                                            // store the names of the variables
+    getline(file2, names);                                            // store the names of the variables
 
     if(count_column(path2) == 2)
     {
-        while (file >> entry1 >> entry2)
+        while (file2 >> entry1 >> entry2)
         {
             VH2.push_back(entry1);
             R2.push_back(entry2);
@@ -254,7 +259,7 @@ void analysis6()
     }
     else if(count_column(path2) == 8)
     {
-        while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6 >> entry7 >> entry8)
+        while (file2 >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6 >> entry7 >> entry8)
         {
             VH2.push_back(entry1);
             R2.push_back(entry2);
@@ -274,10 +279,10 @@ void analysis6()
 
     for (int i = 0; i < VH2.size(); i++)   
     {
-        entry1 = interpolator.Eval(R2.at(i));       
+        entry1 = interpolator.Eval(R2.at(i)) + 273.15;       
         T2.push_back(entry1);                       // K
 
-        entry2 = VH2.at(i) - (chi_medio + omega_medio*I);
+        entry2 = VH2.at(i) - (chi_medio + omega_medio*T2.at(i));
         VH2_correct.push_back(entry2);              // mV
 
         entry3 = VH2.at(i) * 0.02;
@@ -294,44 +299,44 @@ void analysis6()
     }
 
     str1 = "\tT[K]";
-    str2 = "\tVH_corr[mV]";
+    str2 = "\tVH_correct[mV]";
     str3 = "\tsVH[mV]";
     str4 = "\tsR[Ω]";
     string str5("\tsT[K]"), str6("\tsVH_correct[mV]");
     if(names.find(str1) == string::npos)
     {
         names += str1;
-        append_column(path1, "\tT[K]]", T2);
+        append_column(path2, "\tT[K]", T2);
     }    
     if(names.find(str2) == string::npos)
     {
         names += str2;
-        append_column(path1, "\tVH_correct[mV]", VH2_correct);
+        append_column(path2, "\tVH_correct[mV]", VH2_correct);
     }    
     if(names.find(str3) == string::npos)
     {
         names += str3;
-        append_column(path1, "\tsVH[mV]", sVH2);
+        append_column(path2, "\tsVH[mV]", sVH2);
     }    
     if(names.find(str4) == string::npos)
     {
         names += str4;
-        append_column(path1, "\tsR[Ω]", sR2);
+        append_column(path2, "\tsR[Ω]", sR2);
     }    
     if(names.find(str5) == string::npos)
     {
         names += str5;
-        append_column(path1, "\tsT[K]]", sT2);
+        append_column(path2, "\tsT[K]", sT2);
     }    
     if(names.find(str6) == string::npos)
     {
         names += str6;   
-        append_column(path1, "\tsVH_correct[mV]", sVH2_correct);
+        append_column(path2, "\tsVH_correct[mV]", sVH2_correct);
     } 
 
     ////////////////////////// CLOSE FILE ///////////////////////////////////////////////////
     
-    file.close();
+    file2.close();
     
 
 
@@ -347,7 +352,7 @@ void analysis6()
 
     /////////////////////////////// FIT //////////////////////////////////////////////////////
     
-    TCanvas * canvas2 = new TCanvas("canvas2", "TempRiferimento", 500, 5, 500, 600);
+    TCanvas * canvas2 = new TCanvas("canvas2", "TempBconst", 500, 5, 500, 600);
     canvas2->SetGrid();
     canvas2->Divide(1, 2);
     
@@ -362,7 +367,7 @@ void analysis6()
         tf2->SetLineColor(38);
 
         TGraphErrors * graph2 = new TGraphErrors(sub_T2.size(), &sub_T2[0], &sub_VH2_correct[0], &sub_sT2[0], &sub_sVH2_correct[0]);
-        graph2->SetTitle("#splitline{V_{H} vs T (B = 0)}{V_{H} = p_{0} + p_{1} T};T [°C];V_{H} [V]");
+        graph2->SetTitle("#splitline{V_{H} vs T (B = 0)}{V_{H} = p_{0} + p_{1} T};T [K];V_{H} [V]");
         std_graph_settings(*graph2);
     
         canvas2->cd(i+1);
@@ -373,8 +378,8 @@ void analysis6()
         " (Probability: " << tf2->GetProb() << ")." << endl;
 
     }
-    canvas2->SaveAs("../graphs/tempriferimento.jpg");
-    canvas2->SaveAs("../graphs/tempriferimento.pdf");
+    canvas2->SaveAs("../graphs/tempbconst.jpg");
+    canvas2->SaveAs("../graphs/tempbconst.pdf");
 
 
 }

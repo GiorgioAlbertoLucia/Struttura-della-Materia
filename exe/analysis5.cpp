@@ -20,7 +20,7 @@ void analysis5()
 {   
     ///////////////////// SET OUTPUT IN A FILE AND OTHER GENERAL SETTINGS ///////////////////////
 
-    //freopen("../output/analysis1.txt", "w", stdout);
+    //freopen("../output/analysis5.txt", "w", stdout);
     gROOT->SetStyle("Plain");
     gStyle->SetOptFit(1110);
     gStyle->SetFitFormat("2.2e");
@@ -57,17 +57,22 @@ void analysis5()
 
     ///////////////////////////// ADD DATA ///////////////////////////////////////////////////////
 
-    const float V0 = 0.000000100441;    // mV
-    const float sV0 = 0.00000213145;
     const float i = - 0.35;             // mA
     const float si = 0.03; 
+    const float chi = 0.00358919;       // mV (dalla calibrazione in analysis3)
+    const float schi = 0.00311184;
+    const float omega = 0.244617;       // Ω (dalla calibrazione in analysis3)
+    const float somega = 0.0014403;
+
+    const float V0 = chi + omega * i;   // mV   
+    const float sV0 = sqrt(pow(schi, 2) + pow(somega*i, 2) + pow(omega*si, 2));
     const float sB_sist = 4.205;        // mT
 
     // I -> B
-    const float a_tilde = 0.20636;      // mT
-    const float sa_tilde = 6.18027;
-    const float b_tilde = 206.022;      // mT / A
-    const float sb_tilde = 103.011;
+    const float a_tilde = 0.275176;      // mT
+    const float sa_tilde = 6.18651;
+    const float b_tilde = 205.948;       // mT / A
+    const float sb_tilde = 0.281825;
 
     vector<float> R, sR;
     
@@ -85,15 +90,15 @@ void analysis5()
         entry4 = 0.01;
         sI.push_back(entry4);
 
-        entry5 = sqrt( (sa_tilde*sa_tilde + pow(b_tilde*sI.at(j), 2)) + sB_sist*sB_sist);
-        //entry5 = sqrt( (sa_tilde*sa_tilde + pow(sb_tilde*I.at(j), 2) + pow(b_tilde*sI.at(j), 2)) + sB_sist*sB_sist);
+        //entry5 = sqrt( (sa_tilde*sa_tilde + pow(b_tilde*sI.at(j), 2)) + sB_sist*sB_sist);
+        entry5 = sqrt( (sa_tilde*sa_tilde + pow(sb_tilde*I.at(j), 2) + pow(b_tilde*sI.at(j), 2)) + sB_sist*sB_sist);
         sB.push_back(entry5);
 
         entry6 = sqrt(pow(sVH.at(j)/i, 2) + pow(sV0/i, 2) + pow(si*(VH.at(j)-V0)/(i*i), 2));
         sR.push_back(entry6);
     }
 
-    string str1("\tB[mT]"), str2("\tR[Ohm]"), str3("\tsVH[mV]"), str4("\tsI[A]"), str5("\tsB[mT]"), str6("\tsR[Ohm]");
+    string str1("\tB[mT]"), str2("\tR[Ω]"), str3("\tsVH[mV]"), str4("\tsI[A]"), str5("\tsB[mT]"), str6("\tsR[Ω]");
     if(names.find(str1) == string::npos)
     {
         names += "\tB[mT]";
@@ -101,8 +106,8 @@ void analysis5()
     }    
     if(names.find(str2) == string::npos)
     {
-        names += "\tR[Ohm]";   
-        append_column(path1, "R[Ohm]", R);
+        names += "\tR[Ω]";   
+        append_column(path1, "R[Ω]", R);
     } 
     if(names.find(str3) == string::npos)
     {
@@ -121,8 +126,8 @@ void analysis5()
     }    
     if(names.find(str6) == string::npos)
     {
-        names += "\tsR[Ohm]";   
-        append_column(path1, "sR[Ohm]", sR);
+        names += "\tsR[Ω]";   
+        append_column(path1, "sR[Ω]", sR);
     } 
     
 

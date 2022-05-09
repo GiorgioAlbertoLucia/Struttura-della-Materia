@@ -258,20 +258,20 @@ void analysis2()
     float a3 = tf3->GetParameter(0);
     float a4 = tf4->GetParameter(0);
 
-    float sa1 = tf1->GetParameter(0);
-    float sa2 = tf2->GetParameter(0);
-    float sa3 = tf3->GetParameter(0);
-    float sa4 = tf4->GetParameter(0);
+    float sa1 = tf1->GetParError(0);
+    float sa2 = tf2->GetParError(0);
+    float sa3 = tf3->GetParError(0);
+    float sa4 = tf4->GetParError(0);
 
     float b1 = tf1->GetParameter(1);
     float b2 = tf2->GetParameter(1);
     float b3 = tf3->GetParameter(1);
     float b4 = tf4->GetParameter(1);
 
-    float sb1 = tf1->GetParameter(1);
-    float sb2 = tf2->GetParameter(1);
-    float sb3 = tf3->GetParameter(1);
-    float sb4 = tf4->GetParameter(1);
+    float sb1 = tf1->GetParError(1);
+    float sb2 = tf2->GetParError(1);
+    float sb3 = tf3->GetParError(1);
+    float sb4 = tf4->GetParError(1);
 
     // check compatibilità
     z_test(a1, a3, sqrt(sa1*sa1 + sa3*sa3));

@@ -52,3 +52,18 @@ T[°C]   R0[Ω]   R1[Ω]   R2[Ω]   R3[Ω]   R4[Ω]   R5[Ω]   R6[Ω]   R7[Ω]  
 300.00  212.05  212.41  212.76  213.12  213.48  213.83  214.19  214.54  214.90  215.25  
 310.00  215.61  215.96  216.32  216.67  217.03  217.38  217.74  218.09  218.44  218.80  
 320.00  219.15  219.51  219.86  220.21  220.57  220.92  221.27  221.63  221.98  222.33  
+
+
+
+
+
+# Misurazione della tensione di Hall per temperature variabili. Le temperature sono lette tramite un elemento Pt100
+# Le correnti fatte passare nell'elemento di misurazione sono nel range i = 8.00 mA
+#
+# Per queste misure di riferimento, il campo magnetico usato è spento.
+# 
+#   IDM 103N Datasheet (Amperometro): https://www.sglabs.it/public/Iso-Tech_IDM103N.pdf
+#   errori sulle tensioni di Hall: 2% della misura
+#   
+# VH[]          R[Ω]        T[K]        sVH[mV]     sR[Ω]       sT[K]       
+#
