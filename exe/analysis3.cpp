@@ -22,7 +22,7 @@ void analysis3()
 
     ///////////////////// SET OUTPUT IN A FILE AND OTHER GENERAL SETTINGS ///////////////////////
 
-    freopen("../output/analysis3.txt", "w", stdout);
+    //freopen("../output/analysis3.txt", "w", stdout);
     gROOT->SetStyle("Plain");
     gStyle->SetOptFit(1110);
     gStyle->SetFitFormat("2.2e");
@@ -456,6 +456,7 @@ void analysis3()
 
 
 
+
     ///////////////////// PART 3: i = const //////////////////////////////////////
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
@@ -685,4 +686,12 @@ void analysis3()
     cout << endl << "R_H constant: R_H = ("
          << (R_H2_fit.at(0) + R_H2_fit.at(1)) / 2 << " ± " << sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2)) 
          << ") "<< endl;
+
+    const float rh = (R_H2_fit.at(0) + R_H2_fit.at(1)) / 2;                 // 10^7 cm^3 / C
+    const float srh = sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2));
+    const float e = 1.60217663e-19;                                         // C
+    const float p = 1/(rh * e);                                             // 10^-7 cm^-3
+    const float sp = srh / (rh * rh * e);                                   // 10^-7 cm^-3
+
+    cout << endl << "Numero dei portatori: p = (" << p << " ± " << sp << ") 10^-7 cm^-3 " << endl; 
 }

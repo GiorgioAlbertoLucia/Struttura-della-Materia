@@ -14,6 +14,7 @@
 #include <fstream>
 #include <vector>
 #include <string> 
+#include <algorithm>
 
 using namespace std;
 
@@ -21,7 +22,7 @@ void analysis6()
 {  
     ///////////////////// SET OUTPUT IN A FILE AND OTHER GENERAL SETTINGS ///////////////////////
 
-    //freopen("../output/analysis1.txt", "w", stdout);
+    //freopen("../output/analysis6.txt", "w", stdout);
     gROOT->SetStyle("Plain");
     gStyle->SetOptFit(1110);
     gStyle->SetFitFormat("2.2e");
@@ -70,8 +71,42 @@ void analysis6()
         R0.push_back(entry10);
     }
 
+    file.close();
+
     ROOT::Math::Interpolator interpolator(R0.size(), ROOT::Math::Interpolation::kCSPLINE);
     interpolator.SetData(R0.size(), &R0[0], &T0[0]);
+
+    TCanvas * canvas0 = new TCanvas("canvas0", "TempInterpolazione", 500, 5, 500, 600);
+    canvas0->SetGrid();
+
+    TGraph * graph0 = new TGraph(R0.size(), &R0[0], &T0[0]);
+    graph0->SetTitle("Interpolazione;R [#Ohm];T [°C]");
+    std_graph_settings(*graph0);
+    
+    graph0->Draw("ap");
+    canvas0->SaveAs("../graphs/interpolazione.pdf");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -81,16 +116,15 @@ void analysis6()
     
     const char * path1 = "../data/TempRiferimento.txt";
     first_line = comment_lines(path1);
-    ifstream file1(path1);
-    for(int i=0; i<first_line; i++) file1.ignore(10000, '\n');    
+    file.open(path1);
+    for(int i=0; i<first_line; i++) file.ignore(10000, '\n');    
 
     vector<float> VH1, R1;
-    getline(file1, names);                                            // store the names of the variables
+    getline(file, names);                                            // store the names of the variables
 
-    cout << "first line " << first_line << endl << names << endl;
     if(count_column(path1)==2)
     {
-        while (file1 >> entry1 >> entry2)
+        while (file >> entry1 >> entry2)
         {
             VH1.push_back(entry1);
             R1.push_back(entry2);
@@ -98,7 +132,7 @@ void analysis6()
     }
     else if(count_column(path1)==6)
     {
-        while (file1 >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6)
+        while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6)
         {
             VH1.push_back(entry1);          // mV
             R1.push_back(entry2);           // Ω
@@ -109,7 +143,7 @@ void analysis6()
 
     ////////////////////////// CLOSE FILE ///////////////////////////////////////////////////
     
-    file1.close();
+    file.close();
 
 
     
@@ -168,7 +202,7 @@ void analysis6()
     
     
 
-    /////////////////////////////// FIT //////////////////////////////////////////////////////
+    /////////////////////////////// INTERPOLAZIONE //////////////////////////////////////
     
     const int n1[] = {0, 22, 43};        // position where each dataset begins
     const int sets1 = 2;
@@ -179,50 +213,48 @@ void analysis6()
     canvas1->SetGrid();
     canvas1->Divide(1, 2);
     
-    for (int i = 0; i < sets1; i++)
-    {
-        vector<float> sub_VH1(VH1.begin()+n1[i], VH1.begin()+n1[i+1]);
-        vector<float> sub_sVH1(sVH1.begin()+n1[i], sVH1.begin()+n1[i+1]);
-        vector<float> sub_T1(T1.begin()+n1[i], T1.begin()+n1[i+1]);
-        vector<float> sub_sT1(sT1.begin()+n1[i], sT1.begin()+n1[i+1]);
+    vector<double> sub1_VH1(VH1.begin(), VH1.begin()+22);
+    vector<double> sub1_sVH1(sVH1.begin(), sVH1.begin()+22);
+    vector<double> sub1_T1(T1.begin(), T1.begin()+22);
+    vector<double> sub1_sT1(sT1.begin(), sT1.begin()+22);
 
-        cout << "check zzzz " << sub_T1.size() << endl; 
-
-        TF1 * tf1 = new TF1("tf1", "[0]+[1]*x", 0, 500);
-        tf1->SetLineColor(38);
-
-        TGraphErrors * graph1 = new TGraphErrors(sub_T1.size(), &sub_T1[0], &sub_VH1[0], &sub_sT1[0], &sub_sVH1[0]);
-        graph1->SetTitle("#splitline{V_{H} vs T (B = 0)}{V_{H} = p_{0} + p_{1} T};T [K];V_{H} [mV]");
-        std_graph_settings(*graph1);
-    
-        canvas1->cd(i+1);
-        graph1->Fit(tf1, "ER");
-        graph1->Draw("ap");
-    
-        cout << "Chi^2:" << tf1->GetChisquare() << ", number of DoF: " << tf1->GetNDF() << 
-        " (Probability: " << tf1->GetProb() << ")." << endl;
-
-        chi.push_back(tf1->GetParameter(0));
-        schi.push_back(tf1->GetParError(0));
-        omega.push_back(tf1->GetParameter(1));
-        somega.push_back(tf1->GetParError(1));
-    }
-    canvas1->SaveAs("../graphs/tempriferimento.jpg");
-    canvas1->SaveAs("../graphs/tempriferimento.pdf");
+    ROOT::Math::Interpolator interpolator1(sub1_VH1.size(), ROOT::Math::Interpolation::kCSPLINE);
+    interpolator1.SetData(sub1_VH1.size(), &sub1_T1[0], &sub1_VH1[0]);
 
 
-    cout << "Dati Riferimento (V_H = chi + omega * T): " << endl;
-    for(int i = 0; i < chi.size(); i++)
-    {
-        cout << "chi = (" << chi.at(i) << " ± " << schi.at(i) << ") mV" << endl;
-        cout << "omega = (" << omega.at(i) << " ± " << somega.at(i) << ") mV/K" << endl;
-    }
-    
-    const float chi_medio = (chi.at(0)+chi.at(1))/2;
-    const float schi_medio = sqrt(schi.at(0)*schi.at(0) + schi.at(1)*schi.at(1));
+    TGraph * graph1 = new TGraph(sub1_T1.size(), &sub1_T1[0], &sub1_VH1[0]);
+    graph1->SetTitle("Interpolazione V_{H};T [K];V_{H} [mV]");
+    std_graph_settings(*graph1);
 
-    const float omega_medio = (omega.at(0)+omega.at(1))/2;
-    const float somega_medio = sqrt(somega.at(0)*somega.at(0) + somega.at(1)*somega.at(1));
+    canvas1->cd(1);
+    graph1->Draw("ap");
+
+//----------
+
+    vector<double> sub2_VH1(VH1.begin()+22, VH1.end());
+    vector<double> sub2_sVH1(sVH1.begin()+22, sVH1.end());
+    vector<double> sub2_T1(T1.begin()+22, T1.end());
+    vector<double> sub2_sT1(sT1.begin()+22, sT1.end());
+
+    reverse(sub2_T1.begin(), sub2_T1.end());
+    reverse(sub2_VH1.begin(), sub2_VH1.end());
+
+    ROOT::Math::Interpolator interpolator2(sub2_T1.size(), ROOT::Math::Interpolation::kCSPLINE);
+    interpolator2.SetData(sub2_T1.size(), &sub2_T1[0], &sub2_VH1[0]);
+
+    TGraph * graph1_ = new TGraph(sub1_T1.size(), &sub1_T1[0], &sub1_VH1[0]);
+    graph1_->SetTitle("Interpolazione V_{H};T [K];V_{H} [mV]");
+    std_graph_settings(*graph1_);
+
+    canvas1->cd(2);
+    graph1_->Draw("ap");
+
+
+
+    canvas1->SaveAs("../graphs/interpolazione_VH1.png");
+    canvas1->SaveAs("../graphs/interpolazione_VH1.pdf");
+
+
 
 
 
@@ -243,23 +275,23 @@ void analysis6()
     
     const char * path2 = "../data/TempBconst.txt";
     first_line = comment_lines(path2);
-    ifstream file2(path2);
-    for(int i=0; i<first_line; i++) file2.ignore(10000, '\n');    
+    file.open(path2);
+    for(int i=0; i<first_line; i++) file.ignore(10000, '\n');    
 
     vector<float> VH2, R2;
-    getline(file2, names);                                            // store the names of the variables
+    getline(file, names);                                            // store the names of the variables
 
     if(count_column(path2) == 2)
     {
-        while (file2 >> entry1 >> entry2)
+        while (file >> entry1 >> entry2)
         {
             VH2.push_back(entry1);
             R2.push_back(entry2);
         }
     }
-    else if(count_column(path2) == 8)
+    else if(count_column(path2) == 10)
     {
-        while (file2 >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6 >> entry7 >> entry8)
+        while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6 >> entry7 >> entry8 >> entry9 >> entry10)
         {
             VH2.push_back(entry1);
             R2.push_back(entry2);
@@ -270,39 +302,55 @@ void analysis6()
 
     ///////////////////////////// ADD DATA ///////////////////////////////////////////////////////
     
-    const float I = 1.52;                           // A
+    const float I = 1.01;                           // A
     const float sI = 0.01;
+    const float B = 0.275176 + 205.948 * I;         // mT
+    const float sB = sqrt((pow(6.18651, 2) + pow(0.281825*I, 2) + pow(205.948*sI, 2)) + 1.67*1.67);
+    const float i_const = 8.00;                     // mA
+    const float si_const = i_const * 0.006 + 0.03;
+    const float t = 0.1;                            // cm
 
     const int n2[] = {0, 21, 41};
 
-    vector<float> T2, VH2_correct, sVH2, sR2, sT2, sVH2_correct;
+    cout << "check " << VH2.size();
+
+    vector<float> T2, VH2_correct, RH2, sVH2, sR2, sT2, sVH2_correct, sRH2;
 
     for (int i = 0; i < VH2.size(); i++)   
     {
         entry1 = interpolator.Eval(R2.at(i)) + 273.15;       
         T2.push_back(entry1);                       // K
 
-        entry2 = VH2.at(i) - (chi_medio + omega_medio*T2.at(i));
+        if(i < 22)  entry2 = VH2.at(i) - interpolator1.Eval(T2.at(i));
+        else        entry2 = VH2.at(i) - interpolator2.Eval(T2.at(i));
         VH2_correct.push_back(entry2);              // mV
 
-        entry3 = VH2.at(i) * 0.02;
-        sVH2.push_back(entry3);
+        entry3 = VH2.at(i) * t * 1000/(i_const * B);    // V cm (A T)
+        RH2.push_back(entry3);
 
-        entry4 = R2.at(i) * 0.008 + 0.1;
-        sR2.push_back(entry4);
+        entry4 = VH2.at(i) * 0.02;
+        sVH2.push_back(entry4);
 
-        entry5 = interpolator.Deriv(R2.at(i)) * sR2.at(i);
-        sT2.push_back(entry5);
+        entry5 = R2.at(i) * 0.008 + 0.1;
+        sR2.push_back(entry5);
 
-        entry6 = sqrt(pow(sVH2.at(i),2) + pow(schi_medio,2) + pow(I*somega_medio,2) + pow(omega_medio*sI,2));
-        sVH2_correct.push_back(entry6);
+        entry6 = interpolator.Deriv(R2.at(i)) * sR2.at(i);
+        sT2.push_back(entry6);
+
+        if(i < 22)  entry7 = sqrt(pow(sVH2.at(i),2) + pow(sT2.at(i)*interpolator1.Deriv(T2.at(i)),2));
+        else        entry7 = sqrt(pow(sVH2.at(i),2) + pow(sT2.at(i)*interpolator2.Deriv(T2.at(i)),2));
+        sVH2_correct.push_back(entry7);
+
+        entry8 = sqrt(pow(sVH2.at(i)*t*1000/(i_const*B), 2) + pow(sB*VH2.at(i)*t*1000/(i_const*B*B), 2) + 
+                        pow(VH2.at(i)*si_const*t*1000/(i_const*i_const*B), 2));
+        sRH2.push_back(entry8);
     }
 
     str1 = "\tT[K]";
     str2 = "\tVH_correct[mV]";
-    str3 = "\tsVH[mV]";
-    str4 = "\tsR[Ω]";
-    string str5("\tsT[K]"), str6("\tsVH_correct[mV]");
+    str3 = "\tRH[Vcm/AT]";
+    str4 = "\tsVH[mV]";
+    string str5("\tsR[Ω]"), str6("\tsT[K]"), str7("\tsVH_correct[mV]"), str8("\tsRH[Vcm/AT]");
     if(names.find(str1) == string::npos)
     {
         names += str1;
@@ -315,28 +363,38 @@ void analysis6()
     }    
     if(names.find(str3) == string::npos)
     {
-        names += str3;
-        append_column(path2, "\tsVH[mV]", sVH2);
-    }    
+        names += str3;   
+        append_column(path2, "\tRH[Vcm/AT]", RH2);
+    }
     if(names.find(str4) == string::npos)
     {
         names += str4;
-        append_column(path2, "\tsR[Ω]", sR2);
+        append_column(path2, "\tsVH[mV]", sVH2);
     }    
     if(names.find(str5) == string::npos)
     {
         names += str5;
-        append_column(path2, "\tsT[K]", sT2);
+        append_column(path2, "\tsR[Ω]", sR2);
     }    
     if(names.find(str6) == string::npos)
     {
-        names += str6;   
+        names += str6;
+        append_column(path2, "\tsT[K]", sT2);
+    }    
+    if(names.find(str7) == string::npos)
+    {
+        names += str7;   
         append_column(path2, "\tsVH_correct[mV]", sVH2_correct);
     } 
+    if(names.find(str8) == string::npos)
+    {
+        names += str8;   
+        append_column(path2, "\tsRH[Vcm/AT]", sRH2);
+    }
 
     ////////////////////////// CLOSE FILE ///////////////////////////////////////////////////
     
-    file2.close();
+    file.close();
     
 
 
@@ -358,16 +416,18 @@ void analysis6()
     
     for (int i = 0; i < sets1; i++)
     {
+        
         vector<float> sub_VH2_correct(VH2_correct.begin()+n2[i], VH2_correct.begin()+n2[i+1]);
         vector<float> sub_sVH2_correct(sVH2_correct.begin()+n2[i], sVH2_correct.begin()+n2[i+1]);
         vector<float> sub_T2(T2.begin()+n2[i], T2.begin()+n2[i+1]);
         vector<float> sub_sT2(sT2.begin()+n1[i], sT2.begin()+n2[i+1]);
+        
 
-        TF1 * tf2 = new TF1("tf2", "[0]+[1]*x", -15, 15);
+        TF1 * tf2 = new TF1("tf2", "[0]+[1]*x", -15, 500);
         tf2->SetLineColor(38);
 
         TGraphErrors * graph2 = new TGraphErrors(sub_T2.size(), &sub_T2[0], &sub_VH2_correct[0], &sub_sT2[0], &sub_sVH2_correct[0]);
-        graph2->SetTitle("#splitline{V_{H} vs T (B = 0)}{V_{H} = p_{0} + p_{1} T};T [K];V_{H} [V]");
+        graph2->SetTitle("V_{H} vs T (B = const);T [K];V_{H} [mV]");
         std_graph_settings(*graph2);
     
         canvas2->cd(i+1);
@@ -380,6 +440,37 @@ void analysis6()
     }
     canvas2->SaveAs("../graphs/tempbconst.jpg");
     canvas2->SaveAs("../graphs/tempbconst.pdf");
+
+    // RH coefficient
+    
+    TCanvas * canvas3 = new TCanvas("canvas3", "RHBconst", 500, 5, 500, 600);
+    canvas3->SetGrid();
+    canvas3->Divide(1, 2);
+    
+    for (int i = 0; i < sets1; i++)
+    {
+        vector<float> sub_RH2_correct(RH2.begin()+n2[i], RH2.begin()+n2[i+1]);
+        vector<float> sub_sRH2_correct(sRH2.begin()+n2[i], sRH2.begin()+n2[i+1]);
+        vector<float> sub_T2(T2.begin()+n2[i], T2.begin()+n2[i+1]);
+        vector<float> sub_sT2(sT2.begin()+n1[i], sT2.begin()+n2[i+1]);
+
+        TF1 * tf3 = new TF1("tf2", "[0]+[1]*x", -400, 500);
+        tf3->SetLineColor(38);
+
+        TGraphErrors * graph3 = new TGraphErrors(sub_T2.size(), &sub_T2[0], &sub_RH2_correct[0], &sub_sT2[0], &sub_sRH2_correct[0]);
+        graph3->SetTitle("R_{H} vs T;T [K];R_{H} [#frac{V cm}{A T}]");
+        std_graph_settings(*graph3);
+    
+        canvas3->cd(i+1);
+        graph3->Fit(tf3, "ER");
+        graph3->Draw("ap");
+    
+        cout << "Chi^2:" << tf3->GetChisquare() << ", number of DoF: " << tf3->GetNDF() << 
+        " (Probability: " << tf3->GetProb() << ")." << endl;
+
+    }
+    canvas3->SaveAs("../graphs/rh_va_temp.jpg");
+    canvas3->SaveAs("../graphs/rh_vs_temp.pdf");
 
 
 }
