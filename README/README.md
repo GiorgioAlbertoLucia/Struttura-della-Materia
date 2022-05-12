@@ -29,7 +29,7 @@ Risultati fondamentali:
 
 *   Regione di linearità del campo magnetico: -1.45 A, 1.45 A
 
-*   Coefficiente di Hall: R_H = (0.00071062 ± 1.50972e-05) mV cm / (mA mT)
+*   Coefficiente di Hall: R_H = (0.000687329 ± 3.55239e-05) mV cm / (mA mT)
 
 *   Mobilità dei portatori
     µ exp = (0.279635 ± 0.00480695) m^2 / (V s)

@@ -16,11 +16,20 @@
 
 using namespace std;
 
+void std_graph_settings_adv(TGraph& graph)
+{
+    gPad->SetTopMargin(0.15);
+    graph.SetMarkerStyle(21);
+    graph.SetMarkerSize(0.3);
+    graph.SetLineColor(38);
+    graph.SetLineWidth(4);
+}
+
 void analysis4()
 {   
     ///////////////////// SET OUTPUT IN A FILE AND OTHER GENERAL SETTINGS ///////////////////////
 
-    freopen("../output/analysis4.txt", "w", stdout);
+    //freopen("../output/analysis4.txt", "w", stdout);
     gROOT->SetStyle("Plain");
     gStyle->SetOptFit(1110);
     gStyle->SetFitFormat("2.2e");
@@ -28,8 +37,8 @@ void analysis4()
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
     
-    const float R_H = 0.71062;                  // V T / (A cm)
-    const float sR_H = 1.50972e-02;
+    const float R_H = 0.687329;                  // V T / (A cm)
+    const float sR_H = 3.55239e-02;
 
     const float t = 0.1;                        // z axis cm
     const float d = 1.;                         // y axis cm
@@ -103,7 +112,6 @@ void analysis4()
     /////////////////////////////// FIT //////////////////////////////////////////////////////
     
     TCanvas * canvas = new TCanvas("canvas", "mobilità", 500, 5, 500, 600);
-    canvas->SetGrid();
     canvas->Divide(1,2);
     
     const int n[] = {0, 9, 17};    // position where each subset begins
@@ -121,13 +129,15 @@ void analysis4()
         TF1 * tf1 = new TF1("tf1", "[0]+[1]*x", -15, 15);
         tf1->SetLineColor(38);
         tf1->SetParameter(1, 0.051);
-        tf1->SetParNames("V_{0} [V]", "R [m #Omega]");
+        tf1->SetParNames("V_{0} [V]", "R [M #Omega]");
 
         TGraphErrors * graph = new TGraphErrors(sub_i.size(), &sub_i[0], &sub_V[0], &sub_si[0], &sub_sV[0]);
-        graph->SetTitle("#splitline{Mobilita dei portatori}{V = V_{0} + R i};i [mA];V [V]");
-        std_graph_settings(*graph);
+        graph->SetTitle("Mobilita dei portatori;i [mA];V [V]");
+        std_graph_settings_adv(*graph);
     
         canvas->cd(j+1);
+        if(j==1)    gPad->SetTopMargin(0.15);
+        gPad->SetGrid();
         graph->Fit(tf1, "ER");
         graph->Draw("ap");
     
@@ -177,6 +187,7 @@ void analysis4()
     const float dx = omega * sigma * d * t;
     const float sdx = sqrt(pow(somega*sigma*d*t, 2) + pow(omega*ssigma*d*t, 2));
 
+    cout << "La conducibilità del materiale è sigma = (" << sigma << " ± " << ssigma << ") cm^-1 Ω^-1" << endl;
     cout << "Il disallineamento tra i contatti è di (" << dx << " ± " << sdx << ") cm." << endl;
 
 }

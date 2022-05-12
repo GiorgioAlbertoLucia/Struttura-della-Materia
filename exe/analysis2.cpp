@@ -178,6 +178,9 @@ void analysis2()
 
     /////////////////////////////// FIT //////////////////////////////////////////////////////
     
+    TCanvas * canvas = new TCanvas("canvas", "isteresi", 500, 5, 500, 600);
+    canvas->SetGrid();
+
     TCanvas * canvas1 = new TCanvas("canvas1", "isteresi", 500, 5, 500, 600);
     canvas1->SetGrid();
 
@@ -192,6 +195,14 @@ void analysis2()
     graph1->Draw("ap");
     canvas1->SaveAs("../graphs/isteresi_1.jpg");
     canvas1->SaveAs("../graphs/isteresi_1.pdf");
+
+    canvas->cd();
+    graph1->SetTitle("Isteresi");
+    gPad->SetLeftMargin(0.16);
+    gPad->SetTopMargin(0.15);
+    gStyle->SetOptFit(0000);
+    graph1->Fit(tf1, "ER");
+    graph1->Draw("ap");
     
     cout << "Chi^2:" << tf1->GetChisquare() << ", number of DoF: " << tf1->GetNDF() << 
     " (Probability: " << tf1->GetProb() << ")." << endl;
@@ -206,10 +217,17 @@ void analysis2()
     graph2->SetTitle("#splitline{Ciclo di isteresi}{prima salita};I [A];B [mT]");
     std_graph_settings(*graph2);
     
+    gStyle->SetOptFit(1110);
     graph2->Fit(tf2, "ER");
     graph2->Draw("ap");
     canvas2->SaveAs("../graphs/isteresi_2.jpg");
     canvas2->SaveAs("../graphs/isteresi_2.pdf");
+
+    canvas->cd();
+    gStyle->SetOptFit(0000);
+    tf2->SetLineColor(2);
+    graph2->Fit(tf2, "ER");
+    graph2->Draw("same");
     
     cout << "Chi^2:" << tf2->GetChisquare() << ", number of DoF: " << tf2->GetNDF() << 
     " (Probability: " << tf2->GetProb() << ")." << endl;
@@ -224,10 +242,17 @@ void analysis2()
     graph3->SetTitle("#splitline{Ciclo di isteresi}{seconda discesa};I [A];B [mT]");
     std_graph_settings(*graph3);
     
+    gStyle->SetOptFit(1110);
     graph3->Fit(tf3, "ER");
     graph3->Draw("ap");
     canvas3->SaveAs("../graphs/isteresi_3.jpg");
     canvas3->SaveAs("../graphs/isteresi_3.pdf");
+
+    canvas->cd();
+    gStyle->SetOptFit(0000);
+    tf3->SetLineColor(3);
+    graph3->Fit(tf3, "ER");
+    graph3->Draw("same");
     
     cout << "Chi^2:" << tf3->GetChisquare() << ", number of DoF: " << tf3->GetNDF() << 
     " (Probability: " << tf3->GetProb() << ")." << endl;
@@ -242,10 +267,19 @@ void analysis2()
     graph4->SetTitle("#splitline{Ciclo di isteresi}{seconda discesa};I [A];B [mT]");
     std_graph_settings(*graph4);
     
+    gStyle->SetOptFit(1110);
     graph4->Fit(tf4, "ER");
     graph4->Draw("ap");
     canvas4->SaveAs("../graphs/isteresi_4.jpg");
     canvas4->SaveAs("../graphs/isteresi_4.pdf");
+
+    canvas->cd();
+    gStyle->SetOptFit(0000);
+    tf4->SetLineColor(4);
+    graph4->Fit(tf4, "ER");
+    graph4->Draw("same");
+    canvas->SaveAs("../graphs/isteresi.jpg");
+    canvas->SaveAs("../graphs/isteresi.pdf");
     
     cout << "Chi^2:" << tf4->GetChisquare() << ", number of DoF: " << tf4->GetNDF() << 
     " (Probability: " << tf4->GetProb() << ")." << endl;
@@ -302,5 +336,6 @@ void analysis2()
     
     // per calcolare ∆B_cal nei prossimi file di analisi dati, tener conto del fatto che 
     // B = e + f * I -> ∆B = ...
+
 
 }

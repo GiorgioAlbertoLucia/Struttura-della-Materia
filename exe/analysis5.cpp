@@ -188,5 +188,8 @@ void analysis5()
     " (Probability: " << tf2->GetProb() << ")." << endl;
     
 
-
+    cout << endl << "Parametri fit finale: " << endl;
+    cout << "R0 = (" << tf2->GetParameter(0) << " ± " << tf2->GetParError(0) << ") Ω" << endl;
+    cout << "µ^2 = (" << tf2->GetParameter(1) << " ± " << tf2->GetParError(1) << ") Ω mT^{-2}" << endl;
+    cout << "B0 = (" << tf2->GetParameter(2) << " ± " << tf2->GetParError(2) << ") mT" << endl;
 }

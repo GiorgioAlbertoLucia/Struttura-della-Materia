@@ -17,6 +17,16 @@
 
 using namespace std;
 
+void std_graph_settings_adv(TGraph& graph)
+{
+    gPad->SetTopMargin(0.15);
+    graph.SetMarkerColor(2);
+    graph.SetMarkerStyle(1);
+    graph.SetMarkerSize(0.5);
+    graph.SetLineColor(38);
+    graph.SetLineWidth(4);
+}
+
 void analysis3()
 {
 
@@ -101,10 +111,11 @@ void analysis3()
     canvas1->SetGrid();
 
     TF1 *tf1 = new TF1("tf1", "[0]+[1]*x", -15, 15);
+    tf1->SetParNames("#chi", "#omega");
     tf1->SetLineColor(38);
 
     TGraphErrors *graph1 = new TGraphErrors(i0.size(), &i0[0], &VH0[0], &si0[0], &sVH0[0]);
-    graph1->SetTitle("#splitline{Misure di riferimento}{V = p_{0} + p_{1} i};i [mA];V_{H} [mV]");
+    graph1->SetTitle("#splitline{Misure di riferimento}{V = #chi + #omega i};i [mA];V_{H} [mV]");
     std_graph_settings(*graph1);
 
     graph1->Fit(tf1, "ER");
@@ -176,15 +187,15 @@ void analysis3()
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
 
-        first_line = comment_lines("../data/VHBconst.txt");
-    file.open("../data/VHBconst.txt");
+    first_line = comment_lines("../data/VHBconst_corretto.txt");
+    file.open("../data/VHBconst_corretto.txt");
     for (int i = 0; i < first_line; i++)
         file.ignore(10000, '\n');
 
     vector<float> VH1, i1;
     getline(file, names); // store the names of the variables
 
-    if (count_column("../data/VHBconst.txt") == 2)
+    if (count_column("../data/VHBconst_corretto.txt") == 2)
     {
         while (file >> entry1 >> entry2)
         {
@@ -192,7 +203,7 @@ void analysis3()
             i1.push_back(entry2);
         }
     }
-    else if (count_column("../data/VHBconst.txt") == 6)
+    else if (count_column("../data/VHBconst_corretto.txt") == 6)
     {
         while (file >> entry1 >> entry2 >> entry3 >> entry4 >> entry5 >> entry6)
         {
@@ -225,22 +236,22 @@ void analysis3()
     if (names.find(str1) == string::npos)
     {
         names += "\tVH1_correct[mV]";
-        append_column("../data/VHBconst.txt", "\tVH1_correct[mV]", VH1_correct);
+        append_column("../data/VHBconst_corretto.txt", "\tVH1_correct[mV]", VH1_correct);
     }
     if (names.find(str2) == string::npos)
     {
         names += "\tsVH1[mV]";
-        append_column("../data/VHBconst.txt", "\tsVH1[mV]", sVH1);
+        append_column("../data/VHBconst_corretto.txt", "\tsVH1[mV]", sVH1);
     }
     if (names.find(str3) == string::npos)
     {
         names += "\tsi1[mA]";
-        append_column("../data/VHBconst.txt", "\tsi1[mA]", si1);
+        append_column("../data/VHBconst_corretto.txt", "\tsi1[mA]", si1);
     }
     if (names.find(str4) == string::npos)
     {
         names += "\tsVH1_correct[mV]";
-        append_column("../data/VHBconst.txt", "\tsVH1_correct[mV]", sVH1_correct);
+        append_column("../data/VHBconst_corretto.txt", "\tsVH1_correct[mV]", sVH1_correct);
     }
 
     ////////////////////////// CLOSE FILE ///////////////////////////////////////////////////
@@ -260,7 +271,6 @@ void analysis3()
     //////////////////////////////// FIT FOR ALL SUB-DATASETS //////////////////////////////////////
 
     TCanvas *canvas2 = new TCanvas("canvas2", "costante di Hall", 500, 5, 500, 600);
-    canvas2->SetGrid();
     canvas2->Divide(2, 5);
 
     const int n1[] = {0, 9, 18, 27, 36, 45, 54, 63, 72, 81, 90}; // position where each subset begins
@@ -277,13 +287,26 @@ void analysis3()
 
         TF1 *tf = new TF1("tf", "[0]+[1]*x", -15, 15);
         tf->SetLineColor(38);
-        tf->SetParNames("V_{0}", "#frac{R_{H} B}{t}");
+        tf->SetParNames("V_{0}", "R_{H} B / t");
+
+        string title;
+        if(i==0) title = "B = 62 mT;i [mA];V_{H} [mV]";
+        if(i==1) title = "B = 123 mT;i [mA];V_{H} [mV]";
+        if(i==2) title = "B = 185 mT;i [mA];V_{H} [mV]";
+        if(i==3) title = "B = 247 mT;i [mA];V_{H} [mV]";
+        if(i==4) title = "B = 309 mT;i [mA];V_{H} [mV]";
+        if(i==5) title = "B = -62 mT;i [mA];V_{H} [mV]";
+        if(i==6) title = "B = -123 mT;i [mA];V_{H} [mV]";
+        if(i==7) title = "B = -185 mT;i [mA];V_{H} [mV]";
+        if(i==8) title = "B = -247 mT;i [mA];V_{H} [mV]";
+        if(i==9) title = "B = -309 mT;i [mA];V_{H} [mV]";
 
         TGraphErrors *graph = new TGraphErrors(sub_i1.size(), &sub_i1[0], &sub_VH1correct[0], &sub_si1[0], &sub_sVH1correct[0]);
-        graph->SetTitle("#splitline{Costante di Hall}{V = V_{0} + #frac{R_{H} i B}{t}};i [mA];V_{H} [mV]");
-        std_graph_settings(*graph);
+        graph->SetTitle(title.c_str());
 
         canvas2->cd(i + 1);
+        std_graph_settings_adv(*graph);
+        gPad->SetGrid();
         graph->Fit(tf, "ER");
         graph->Draw("ap");
 
@@ -334,6 +357,10 @@ void analysis3()
         RH_over_sRHsquared.push_back(R_H.at(i) * inv_sRH_squared.at(i));
     }
 
+    cout << endl << "IMPORTANTE: VALORI DEL CAMPO MAGNETICO" << endl;
+    for(int i=0; i<sets1; i++) cout << B[i] << " ± " << sB[i] << endl;
+    cout << endl;
+
     // reference for weighted average: http://web2.ba.infn.it/~palano//statistica/web/lab/chap2/node5_2.html
 
     const float R_H1 = accumulate(RH_over_sRHsquared.begin(), RH_over_sRHsquared.begin() + 5, 0.) /
@@ -350,7 +377,6 @@ void analysis3()
     /////////////////////////// HALL CONSTANT - FIT //////////////////////////////////
 
     TCanvas *canvas2_ = new TCanvas("canvas2_", "costante di Hall", 500, 5, 500, 600);
-    canvas2_->SetGrid();
     canvas2_->Divide(1, 2);
 
     const int iter1[] = {0, 5, 10};
@@ -391,13 +417,15 @@ void analysis3()
 
         TF1 *tf = new TF1("tf", "[0]+[1]*x", -400, 400);
         tf->SetLineColor(38);
-        tf->SetParNames("b_{0}", "#frac{R_{H}}{t}");
+        tf->SetParNames("b_{0}", "R_{H} / t");
 
         TGraphErrors *graph = new TGraphErrors(sub_B.size(), &sub_B[0], &sub_b1[0], &sub_sB[0], &sub_sb1[0]);
-        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} B}{t}};B [mT];b [mV/mA]");
-        std_graph_settings(*graph);
+        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} B}{t}};B [mT];b #left[#frac{mV}{mA}#right]");
 
         canvas2_->cd(i + 1);
+        std_graph_settings_adv(*graph);
+        gPad->SetGrid();
+        gPad->SetTopMargin(0.20);
         graph->Fit(tf, "ER");
         graph->Draw("ap");
 
@@ -414,6 +442,11 @@ void analysis3()
     cout << endl << "Z Test: Hall constant R_H [mV cm / (mT mA)] - fit results: " << endl;
     z_test(R_H1_fit.at(0), R_H1_fit.at(1), sqrt(pow(sR_H1_fit.at(0), 2) + pow(sR_H1_fit.at(1), 2)));
 
+    const float RH1_mean = (R_H1_fit.at(0) + R_H1_fit.at(1))/2;
+    const float sRH1_mean = sqrt(pow(sR_H1_fit.at(0), 2) + pow(sR_H1_fit.at(1), 2));
+
+    cout << "Valore medio coefficiente di Hall (B=const): RH [mV cm / (mT mA)] = (" << RH1_mean << " ± " << sRH1_mean << ")" 
+         << endl;
 
 
 
@@ -568,7 +601,7 @@ void analysis3()
     ////////////////////////// PRINT OUT DATA /////////////////////////////////////////////////
 
     cout << endl
-         << "Dati della misura con B = const:" << endl
+         << "Dati della misura con i = const:" << endl
          << names << endl;
     for (int i = 0; i < VH2.size(); i++)
         cout << VH2.at(i) << "\t" << I2.at(i) << "\t" << B2.at(i) << "\t" << VH2_correct.at(i) << "\t"
@@ -592,13 +625,23 @@ void analysis3()
 
         TF1 *tf = new TF1("tf", "[0]+[1]*x", -400, 400);
         tf->SetLineColor(38);
-        tf->SetParNames("V_{0}", "#frac{R_{H} B}{t}");
+        tf->SetParNames("V_{0}", "R_{H} B / t");
+
+        string title;
+        if(i==0) title = "i = 1.5 mA;B [mT];V_{H} [mV]";
+        if(i==1) title = "i = 4.5 mA;B [mT];V_{H} [mV]";
+        if(i==2) title = "i = 7.5 mA;B [mT];V_{H} [mV]";
+        if(i==3) title = "i = -1.5 mA;B [mT];V_{H} [mV]";
+        if(i==4) title = "i = -4.5 mA;B [mT];V_{H} [mV]";
+        if(i==5) title = "i = -7.5 mA;B [mT];V_{H} [mV]";
+
 
         TGraphErrors *graph = new TGraphErrors(sub_B2.size(), &sub_B2[0], &sub_VH2correct[0], &sub_sB2[0], &sub_sVH2correct[0]);
-        graph->SetTitle("#splitline{Costante di Hall}{V = V_{0} + #frac{R_{H} i B}{t}};B [mT];V_{H} [mV]");
-        std_graph_settings(*graph);
+        graph->SetTitle(title.c_str());
 
         canvas3->cd(i + 1);
+        std_graph_settings(*graph);
+        gPad->SetGrid();
         graph->Fit(tf, "ER");
         graph->Draw("ap");
 
@@ -641,7 +684,6 @@ void analysis3()
     /////////////////////////// HALL CONSTANT - FIT //////////////////////////////////
 
     TCanvas *canvas3_ = new TCanvas("canvas3_", "costante di Hall", 500, 5, 500, 600);
-    canvas3_->SetGrid();
     canvas3_->Divide(1, 2);
 
     const int iter2[] = {0, sets2 / 2, sets2};
@@ -661,13 +703,15 @@ void analysis3()
 
         TF1 *tf = new TF1("tf", "[0]+[1]*x", -400, 400);
         tf->SetLineColor(38);
-        tf->SetParNames("b_{0}", "#frac{R_{H}}{t}");
+        tf->SetParNames("b_{0}", "R_{H} / t");
 
         TGraphErrors *graph = new TGraphErrors(sub_i2.size(), &sub_i2[0], &sub_b2[0], &sub_si2[0], &sub_sb2[0]);
-        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} i}{t}};i [mA];b [mV / mT]");
-        std_graph_settings(*graph);
+        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} i}{t}};i [mA];b #left[#frac{mV}{mT}#right]");
 
         canvas3_->cd(i + 1);
+        std_graph_settings_adv(*graph);
+        gPad->SetGrid();
+        gPad->SetTopMargin(0.20);
         graph->Fit(tf, "ER");
         graph->Draw("ap");
 
@@ -683,15 +727,21 @@ void analysis3()
 
     cout << endl << "Z Test: Hall constant R_H [mV cm / (mT mA)] - fit results: " << endl;
     z_test(R_H2_fit.at(0), R_H2_fit.at(1), sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2)));
-    cout << endl << "R_H constant: R_H = ("
-         << (R_H2_fit.at(0) + R_H2_fit.at(1)) / 2 << " ± " << sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2)) 
-         << ") "<< endl;
 
-    const float rh = (R_H2_fit.at(0) + R_H2_fit.at(1)) / 2;                 // 10^7 cm^3 / C
-    const float srh = sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2));
+    const float RH2_mean = (R_H2_fit.at(0) + R_H2_fit.at(1)) / 2;                 // 10^7 cm^3 / C
+    const float sRH2_mean = sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2));
+    cout << endl << "Valore medio del coefficiente di Hall (i=const): R_H  [mV cm / (mT mA)] = ("
+         << RH2_mean << " ± " << sRH2_mean  << ") "<< endl;
+
+    cout << "Z Test: costanti di Hall a confronto (metodo B=const e i=const): " << endl;
+    z_test(RH1_mean, RH2_mean, sqrt(pow(sRH1_mean, 2) + pow(sRH2_mean, 2)));
+
+    const float rh = (RH1_mean + RH2_mean) / 2;                             // 10^7 cm^3 / C
+    const float srh = sqrt(pow(sRH1_mean, 2) + pow(sRH2_mean, 2));
     const float e = 1.60217663e-19;                                         // C
     const float p = 1/(rh * e);                                             // 10^-7 cm^-3
     const float sp = srh / (rh * rh * e);                                   // 10^-7 cm^-3
 
+    cout << endl << "Costante di Hall definitiva: RH = (" << rh << " ± " << srh << ") mV cm / (mT mA)" << endl;
     cout << endl << "Numero dei portatori: p = (" << p << " ± " << sp << ") 10^-7 cm^-3 " << endl; 
 }

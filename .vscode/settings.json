@@ -13,6 +13,7 @@
         "numeric": "cpp",
         "__split_buffer": "cpp",
         "list": "cpp",
-        "decayFit.C": "cpp"
+        "decayFit.C": "cpp",
+        "interpolation.C": "cpp"
     }
 }

@@ -18,6 +18,16 @@
 
 using namespace std;
 
+void std_graph_settings_adv(TGraph& graph)
+{
+    gPad->SetTopMargin(0.15);
+    graph.SetMarkerStyle(21);
+    graph.SetMarkerColor(1);
+    graph.SetMarkerSize(0.1);
+    graph.SetLineColor(38);
+    graph.SetLineWidth(4);
+}
+
 void analysis6()
 {  
     ///////////////////// SET OUTPUT IN A FILE AND OTHER GENERAL SETTINGS ///////////////////////
@@ -80,10 +90,14 @@ void analysis6()
     canvas0->SetGrid();
 
     TGraph * graph0 = new TGraph(R0.size(), &R0[0], &T0[0]);
-    graph0->SetTitle("Interpolazione;R [#Ohm];T [°C]");
+    graph0->SetTitle("Interpolazione;R [#Omega];T [#circ C]");
     std_graph_settings(*graph0);
+    graph0->SetLineColor(38);
+    graph0->SetMarkerSize(0.2);
+    graph0->SetMarkerColor(2);
+    graph0->SetLineWidth(7);
     
-    graph0->Draw("ap");
+    graph0->Draw("apl");
     canvas0->SaveAs("../graphs/interpolazione.pdf");
 
 
@@ -138,8 +152,6 @@ void analysis6()
             R1.push_back(entry2);           // Ω
         }
     }
-
-    cout << "check " << VH1.size() << endl;
 
     ////////////////////////// CLOSE FILE ///////////////////////////////////////////////////
     
@@ -210,7 +222,6 @@ void analysis6()
     vector<float> chi, schi, omega, somega;
 
     TCanvas * canvas1 = new TCanvas("canvas1", "TempRiferimento", 500, 5, 500, 600);
-    canvas1->SetGrid();
     canvas1->Divide(1, 2);
     
     vector<double> sub1_VH1(VH1.begin(), VH1.begin()+22);
@@ -224,10 +235,12 @@ void analysis6()
 
     TGraph * graph1 = new TGraph(sub1_T1.size(), &sub1_T1[0], &sub1_VH1[0]);
     graph1->SetTitle("Interpolazione V_{H};T [K];V_{H} [mV]");
-    std_graph_settings(*graph1);
+    std_graph_settings_adv(*graph1);
+    graph1->SetLineColor(38);
 
     canvas1->cd(1);
-    graph1->Draw("ap");
+    gPad->SetGrid();
+    graph1->Draw("apl");
 
 //----------
 
@@ -244,12 +257,12 @@ void analysis6()
 
     TGraph * graph1_ = new TGraph(sub1_T1.size(), &sub1_T1[0], &sub1_VH1[0]);
     graph1_->SetTitle("Interpolazione V_{H};T [K];V_{H} [mV]");
-    std_graph_settings(*graph1_);
+    std_graph_settings_adv(*graph1_);
+    graph1_->SetLineColor(38);
 
     canvas1->cd(2);
-    graph1_->Draw("ap");
-
-
+    gPad->SetGrid();
+    graph1_->Draw("apl");
 
     canvas1->SaveAs("../graphs/interpolazione_VH1.png");
     canvas1->SaveAs("../graphs/interpolazione_VH1.pdf");
@@ -411,7 +424,6 @@ void analysis6()
     /////////////////////////////// FIT //////////////////////////////////////////////////////
     
     TCanvas * canvas2 = new TCanvas("canvas2", "TempBconst", 500, 5, 500, 600);
-    canvas2->SetGrid();
     canvas2->Divide(1, 2);
     
     for (int i = 0; i < sets1; i++)
@@ -421,22 +433,15 @@ void analysis6()
         vector<float> sub_sVH2_correct(sVH2_correct.begin()+n2[i], sVH2_correct.begin()+n2[i+1]);
         vector<float> sub_T2(T2.begin()+n2[i], T2.begin()+n2[i+1]);
         vector<float> sub_sT2(sT2.begin()+n1[i], sT2.begin()+n2[i+1]);
-        
-
-        TF1 * tf2 = new TF1("tf2", "[0]+[1]*x", -15, 500);
-        tf2->SetLineColor(38);
 
         TGraphErrors * graph2 = new TGraphErrors(sub_T2.size(), &sub_T2[0], &sub_VH2_correct[0], &sub_sT2[0], &sub_sVH2_correct[0]);
         graph2->SetTitle("V_{H} vs T (B = const);T [K];V_{H} [mV]");
-        std_graph_settings(*graph2);
+        std_graph_settings_adv(*graph2);
+        graph2->SetLineColor(38);
     
         canvas2->cd(i+1);
-        graph2->Fit(tf2, "ER");
-        graph2->Draw("ap");
-    
-        cout << "Chi^2:" << tf2->GetChisquare() << ", number of DoF: " << tf2->GetNDF() << 
-        " (Probability: " << tf2->GetProb() << ")." << endl;
-
+        gPad->SetGrid();
+        graph2->Draw("apl");
     }
     canvas2->SaveAs("../graphs/tempbconst.jpg");
     canvas2->SaveAs("../graphs/tempbconst.pdf");
@@ -444,7 +449,6 @@ void analysis6()
     // RH coefficient
     
     TCanvas * canvas3 = new TCanvas("canvas3", "RHBconst", 500, 5, 500, 600);
-    canvas3->SetGrid();
     canvas3->Divide(1, 2);
     
     for (int i = 0; i < sets1; i++)
@@ -454,20 +458,16 @@ void analysis6()
         vector<float> sub_T2(T2.begin()+n2[i], T2.begin()+n2[i+1]);
         vector<float> sub_sT2(sT2.begin()+n1[i], sT2.begin()+n2[i+1]);
 
-        TF1 * tf3 = new TF1("tf2", "[0]+[1]*x", -400, 500);
-        tf3->SetLineColor(38);
-
         TGraphErrors * graph3 = new TGraphErrors(sub_T2.size(), &sub_T2[0], &sub_RH2_correct[0], &sub_sT2[0], &sub_sRH2_correct[0]);
         graph3->SetTitle("R_{H} vs T;T [K];R_{H} [#frac{V cm}{A T}]");
-        std_graph_settings(*graph3);
+        std_graph_settings_adv(*graph3);
+        graph3->SetLineColor(38);
+        graph3->SetMarkerStyle(1);
+        
     
         canvas3->cd(i+1);
-        graph3->Fit(tf3, "ER");
-        graph3->Draw("ap");
-    
-        cout << "Chi^2:" << tf3->GetChisquare() << ", number of DoF: " << tf3->GetNDF() << 
-        " (Probability: " << tf3->GetProb() << ")." << endl;
-
+        gPad->SetGrid();
+        graph3->Draw("apl");
     }
     canvas3->SaveAs("../graphs/rh_va_temp.jpg");
     canvas3->SaveAs("../graphs/rh_vs_temp.pdf");
