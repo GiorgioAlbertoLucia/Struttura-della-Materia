@@ -288,6 +288,7 @@ void analysis3()
         TF1 *tf = new TF1("tf", "[0]+[1]*x", -15, 15);
         tf->SetLineColor(38);
         tf->SetParNames("V_{0}", "R_{H} B / t");
+        tf->SetLineWidth(2);
 
         string title;
         if(i==0) title = "B = 62 mT;i [mA];V_{H} [mV]";
@@ -377,7 +378,6 @@ void analysis3()
     /////////////////////////// HALL CONSTANT - FIT //////////////////////////////////
 
     TCanvas *canvas2_ = new TCanvas("canvas2_", "costante di Hall", 500, 5, 500, 600);
-    canvas2_->Divide(1, 2);
 
     const int iter1[] = {0, 5, 10};
 
@@ -408,13 +408,6 @@ void analysis3()
             }
         }
 
-        cout << endl
-             << "CHECK 2 " << endl;
-        for (int i = 0; i < sub_b1.size(); i++)
-        {
-            cout << sub_b1.at(i) << "\t" << sub_sb1.at(i) << "\t" << sub_B.at(i) << "\t" << sub_sB.at(i) << endl;
-        }
-
         TF1 *tf = new TF1("tf", "[0]+[1]*x", -400, 400);
         tf->SetLineColor(38);
         tf->SetParNames("b_{0}", "R_{H} / t");
@@ -422,10 +415,11 @@ void analysis3()
         TGraphErrors *graph = new TGraphErrors(sub_B.size(), &sub_B[0], &sub_b1[0], &sub_sB[0], &sub_sb1[0]);
         graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} B}{t}};B [mT];b #left[#frac{mV}{mA}#right]");
 
-        canvas2_->cd(i + 1);
-        std_graph_settings_adv(*graph);
+        std_graph_settings(*graph);
+        graph->GetYaxis()->SetTitleOffset(2.3);
         gPad->SetGrid();
         gPad->SetTopMargin(0.20);
+        gPad->SetLeftMargin(0.20);
         graph->Fit(tf, "ER");
         graph->Draw("ap");
 
@@ -434,10 +428,10 @@ void analysis3()
 
         R_H1_fit.push_back(tf->GetParameter(1) * t);
         sR_H1_fit.push_back(tf->GetParError(1) * t);
-    }
 
-    canvas2_->SaveAs("../graphs/coeff_Hall1.jpg");
-    canvas2_->SaveAs("../graphs/coeff_Hall1.pdf");
+        if(i==0)    canvas2_->SaveAs("../graphs/coeff_Hall1_1.pdf");
+        if(i==1)    canvas2_->SaveAs("../graphs/coeff_Hall1_2.pdf");
+    }
 
     cout << endl << "Z Test: Hall constant R_H [mV cm / (mT mA)] - fit results: " << endl;
     z_test(R_H1_fit.at(0), R_H1_fit.at(1), sqrt(pow(sR_H1_fit.at(0), 2) + pow(sR_H1_fit.at(1), 2)));
@@ -626,6 +620,7 @@ void analysis3()
         TF1 *tf = new TF1("tf", "[0]+[1]*x", -400, 400);
         tf->SetLineColor(38);
         tf->SetParNames("V_{0}", "R_{H} B / t");
+        tf->SetLineWidth(2);
 
         string title;
         if(i==0) title = "i = 1.5 mA;B [mT];V_{H} [mV]";
@@ -684,7 +679,6 @@ void analysis3()
     /////////////////////////// HALL CONSTANT - FIT //////////////////////////////////
 
     TCanvas *canvas3_ = new TCanvas("canvas3_", "costante di Hall", 500, 5, 500, 600);
-    canvas3_->Divide(1, 2);
 
     const int iter2[] = {0, sets2 / 2, sets2};
     vector<float> R_H2_fit, sR_H2_fit;
@@ -708,10 +702,11 @@ void analysis3()
         TGraphErrors *graph = new TGraphErrors(sub_i2.size(), &sub_i2[0], &sub_b2[0], &sub_si2[0], &sub_sb2[0]);
         graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} i}{t}};i [mA];b #left[#frac{mV}{mT}#right]");
 
-        canvas3_->cd(i + 1);
-        std_graph_settings_adv(*graph);
+        std_graph_settings(*graph);
+        graph->GetYaxis()->SetTitleOffset(2.3);
         gPad->SetGrid();
         gPad->SetTopMargin(0.20);
+        gPad->SetLeftMargin(0.20);
         graph->Fit(tf, "ER");
         graph->Draw("ap");
 
@@ -720,10 +715,10 @@ void analysis3()
 
         R_H2_fit.push_back(tf->GetParameter(1) * t);
         sR_H2_fit.push_back(tf->GetParError(1) * t);
-    }
 
-    canvas3_->SaveAs("../graphs/coeff_Hall2.jpg");
-    canvas3_->SaveAs("../graphs/coeff_Hall2.pdf");
+        if(i==0)    canvas3_->SaveAs("../graphs/coeff_Hall2_1.pdf");
+        if(i==1)    canvas3_->SaveAs("../graphs/coeff_Hall2_2.pdf");
+    }
 
     cout << endl << "Z Test: Hall constant R_H [mV cm / (mT mA)] - fit results: " << endl;
     z_test(R_H2_fit.at(0), R_H2_fit.at(1), sqrt(pow(sR_H2_fit.at(0), 2) + pow(sR_H2_fit.at(1), 2)));

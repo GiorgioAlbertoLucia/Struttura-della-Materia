@@ -112,7 +112,6 @@ void analysis4()
     /////////////////////////////// FIT //////////////////////////////////////////////////////
     
     TCanvas * canvas = new TCanvas("canvas", "mobilità", 500, 5, 500, 600);
-    canvas->Divide(1,2);
     
     const int n[] = {0, 9, 17};    // position where each subset begins
     const int sets = 2;
@@ -135,14 +134,18 @@ void analysis4()
         graph->SetTitle("Mobilita dei portatori;i [mA];V [V]");
         std_graph_settings_adv(*graph);
     
-        canvas->cd(j+1);
-        if(j==1)    gPad->SetTopMargin(0.15);
+        graph->GetYaxis()->SetTitleOffset(2.3);
         gPad->SetGrid();
+        gPad->SetTopMargin(0.20);
+        gPad->SetLeftMargin(0.20);
         graph->Fit(tf1, "ER");
         graph->Draw("ap");
     
         cout << "Chi^2:" << tf1->GetChisquare() << ", number of DoF: " << tf1->GetNDF() << 
         " (Probability: " << tf1->GetProb() << ")." << endl;
+
+        if(j==0)    canvas->SaveAs("../graphs/mobilità_1.pdf");
+        if(j==1)    canvas->SaveAs("../graphs/mobilità_2.pdf");
 
         V0.push_back(tf1->GetParameter(0));         // V
         sV0.push_back(tf1->GetParError(0));
@@ -150,8 +153,6 @@ void analysis4()
         sR.push_back(tf1->GetParError(1)*1000);
     }
     
-    canvas->SaveAs("../graphs/mobilità.jpg");
-    canvas->SaveAs("../graphs/mobilità.pdf");
 
     ////////////////////////////////////// MOBILITÀ /////////////////////////////////////
     cout << "Z test, intercetta V0 compatibile con 0: " << endl;

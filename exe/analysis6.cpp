@@ -92,6 +92,8 @@ void analysis6()
     TGraph * graph0 = new TGraph(R0.size(), &R0[0], &T0[0]);
     graph0->SetTitle("Interpolazione;R [#Omega];T [#circ C]");
     std_graph_settings(*graph0);
+
+    graph0->GetYaxis()->SetTitleOffset(1.5);
     graph0->SetLineColor(38);
     graph0->SetMarkerSize(0.2);
     graph0->SetMarkerColor(2);
@@ -222,7 +224,6 @@ void analysis6()
     vector<float> chi, schi, omega, somega;
 
     TCanvas * canvas1 = new TCanvas("canvas1", "TempRiferimento", 500, 5, 500, 600);
-    canvas1->Divide(1, 2);
     
     vector<double> sub1_VH1(VH1.begin(), VH1.begin()+22);
     vector<double> sub1_sVH1(sVH1.begin(), sVH1.begin()+22);
@@ -233,14 +234,17 @@ void analysis6()
     interpolator1.SetData(sub1_VH1.size(), &sub1_T1[0], &sub1_VH1[0]);
 
 
-    TGraph * graph1 = new TGraph(sub1_T1.size(), &sub1_T1[0], &sub1_VH1[0]);
+    TGraphErrors * graph1 = new TGraphErrors(sub1_T1.size(), &sub1_T1[0], &sub1_VH1[0], &sub1_sT1[0], &sub1_sVH1[0]);
     graph1->SetTitle("Interpolazione V_{H};T [K];V_{H} [mV]");
     std_graph_settings_adv(*graph1);
     graph1->SetLineColor(38);
 
-    canvas1->cd(1);
+    graph1->GetYaxis()->SetTitleOffset(2.5);
+    gPad->SetGrid();
+    gPad->SetLeftMargin(0.15);
     gPad->SetGrid();
     graph1->Draw("apl");
+    canvas1->SaveAs("../graphs/interpolazione_VH1_1.pdf");
 
 //----------
 
@@ -260,12 +264,12 @@ void analysis6()
     std_graph_settings_adv(*graph1_);
     graph1_->SetLineColor(38);
 
-    canvas1->cd(2);
+    graph1->GetYaxis()->SetTitleOffset(2.5);
+    gPad->SetGrid();
+    gPad->SetLeftMargin(0.15);
     gPad->SetGrid();
     graph1_->Draw("apl");
-
-    canvas1->SaveAs("../graphs/interpolazione_VH1.png");
-    canvas1->SaveAs("../graphs/interpolazione_VH1.pdf");
+    canvas1->SaveAs("../graphs/interpolazione_VH1_2.pdf");
 
 
 
@@ -424,11 +428,9 @@ void analysis6()
     /////////////////////////////// FIT //////////////////////////////////////////////////////
     
     TCanvas * canvas2 = new TCanvas("canvas2", "TempBconst", 500, 5, 500, 600);
-    canvas2->Divide(1, 2);
     
     for (int i = 0; i < sets1; i++)
-    {
-        
+    {  
         vector<float> sub_VH2_correct(VH2_correct.begin()+n2[i], VH2_correct.begin()+n2[i+1]);
         vector<float> sub_sVH2_correct(sVH2_correct.begin()+n2[i], sVH2_correct.begin()+n2[i+1]);
         vector<float> sub_T2(T2.begin()+n2[i], T2.begin()+n2[i+1]);
@@ -439,12 +441,15 @@ void analysis6()
         std_graph_settings_adv(*graph2);
         graph2->SetLineColor(38);
     
-        canvas2->cd(i+1);
+        graph2->GetYaxis()->SetTitleOffset(1.5);
+        gPad->SetGrid();
+        gPad->SetLeftMargin(0.20);
         gPad->SetGrid();
         graph2->Draw("apl");
+
+        if(i==0)    canvas2->SaveAs("../graphs/tempbconst_1.pdf");
+        if(i==1)    canvas2->SaveAs("../graphs/tempbconst_2.pdf");
     }
-    canvas2->SaveAs("../graphs/tempbconst.jpg");
-    canvas2->SaveAs("../graphs/tempbconst.pdf");
 
     // RH coefficient
     
@@ -459,18 +464,19 @@ void analysis6()
         vector<float> sub_sT2(sT2.begin()+n1[i], sT2.begin()+n2[i+1]);
 
         TGraphErrors * graph3 = new TGraphErrors(sub_T2.size(), &sub_T2[0], &sub_RH2_correct[0], &sub_sT2[0], &sub_sRH2_correct[0]);
-        graph3->SetTitle("R_{H} vs T;T [K];R_{H} [#frac{V cm}{A T}]");
+        graph3->SetTitle("R_{H} vs T;T [K];R_{H} #left[#frac{V cm}{A T}#right]");
         std_graph_settings_adv(*graph3);
         graph3->SetLineColor(38);
         graph3->SetMarkerStyle(1);
         
-    
-        canvas3->cd(i+1);
+        graph3->GetYaxis()->SetTitleOffset(1.5);
+        gPad->SetGrid();
+        gPad->SetLeftMargin(0.20);
         gPad->SetGrid();
         graph3->Draw("apl");
+        if(i==0)    canvas3->SaveAs("../graphs/rh_vs_temp_1.pdf");
+        if(i==1)    canvas3->SaveAs("../graphs/rh_vs_temp_2.pdf");
     }
-    canvas3->SaveAs("../graphs/rh_va_temp.jpg");
-    canvas3->SaveAs("../graphs/rh_vs_temp.pdf");
 
 
 }

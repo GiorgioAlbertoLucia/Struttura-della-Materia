@@ -200,8 +200,8 @@ void analysis2()
     graph1->SetTitle("Isteresi");
     gPad->SetLeftMargin(0.16);
     gPad->SetTopMargin(0.15);
-    gStyle->SetOptFit(0000);
     graph1->Fit(tf1, "ER");
+    gStyle->SetOptFit(0);
     graph1->Draw("ap");
     
     cout << "Chi^2:" << tf1->GetChisquare() << ", number of DoF: " << tf1->GetNDF() << 
@@ -224,9 +224,9 @@ void analysis2()
     canvas2->SaveAs("../graphs/isteresi_2.pdf");
 
     canvas->cd();
-    gStyle->SetOptFit(0000);
     tf2->SetLineColor(2);
     graph2->Fit(tf2, "ER");
+    gStyle->SetOptFit(0);
     graph2->Draw("same");
     
     cout << "Chi^2:" << tf2->GetChisquare() << ", number of DoF: " << tf2->GetNDF() << 
@@ -249,9 +249,9 @@ void analysis2()
     canvas3->SaveAs("../graphs/isteresi_3.pdf");
 
     canvas->cd();
-    gStyle->SetOptFit(0000);
     tf3->SetLineColor(3);
     graph3->Fit(tf3, "ER");
+    gStyle->SetOptFit(0);
     graph3->Draw("same");
     
     cout << "Chi^2:" << tf3->GetChisquare() << ", number of DoF: " << tf3->GetNDF() << 
@@ -264,7 +264,7 @@ void analysis2()
     tf4->SetLineColor(38);
 
     TGraphErrors * graph4 = new TGraphErrors(I4.size(), &I4[0], &B4[0], &sI4[0], &sB4[0]);
-    graph4->SetTitle("#splitline{Ciclo di isteresi}{seconda discesa};I [A];B [mT]");
+    graph4->SetTitle("#splitline{Ciclo di isteresi}{seconda salita};I [A];B [mT]");
     std_graph_settings(*graph4);
     
     gStyle->SetOptFit(1110);
@@ -274,9 +274,9 @@ void analysis2()
     canvas4->SaveAs("../graphs/isteresi_4.pdf");
 
     canvas->cd();
-    gStyle->SetOptFit(0000);
     tf4->SetLineColor(4);
     graph4->Fit(tf4, "ER");
+    gStyle->SetOptFit(0);
     graph4->Draw("same");
     canvas->SaveAs("../graphs/isteresi.jpg");
     canvas->SaveAs("../graphs/isteresi.pdf");
