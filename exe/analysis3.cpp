@@ -107,7 +107,7 @@ void analysis3()
 
     /////////////////////////////// FIT //////////////////////////////////////////////////////
 
-    TCanvas *canvas1 = new TCanvas("canvas1", "riferimento", 500, 5, 500, 600);
+    TCanvas *canvas1 = new TCanvas("canvas1", "riferimento", 500, 5, 500, 500);
     canvas1->SetGrid();
 
     TF1 *tf1 = new TF1("tf1", "[0]+[1]*x", -15, 15);
@@ -120,7 +120,6 @@ void analysis3()
 
     graph1->Fit(tf1, "ER");
     graph1->Draw("ap");
-    canvas1->SaveAs("../graphs/tensione_hall0.jpg");
     canvas1->SaveAs("../graphs/tensione_hall0.pdf");
 
     cout << "Chi^2:" << tf1->GetChisquare() << ", number of DoF: " << tf1->GetNDF() << " (Probability: " << tf1->GetProb() << ")." << endl;
@@ -270,7 +269,7 @@ void analysis3()
 
     //////////////////////////////// FIT FOR ALL SUB-DATASETS //////////////////////////////////////
 
-    TCanvas *canvas2 = new TCanvas("canvas2", "costante di Hall", 500, 5, 500, 600);
+    TCanvas *canvas2 = new TCanvas("canvas2", "costante di Hall", 500, 5, 500, 900);
     canvas2->Divide(2, 5);
 
     const int n1[] = {0, 9, 18, 27, 36, 45, 54, 63, 72, 81, 90}; // position where each subset begins
@@ -319,8 +318,6 @@ void analysis3()
         b1.push_back(tf->GetParameter(1));      // mV / mA
         sb1.push_back(tf->GetParError(1));
     }
-
-    canvas2->SaveAs("../graphs/tensione_hall1.jpg");
     canvas2->SaveAs("../graphs/tensione_hall1.pdf");
 
     //////////////// CHECK
@@ -377,7 +374,7 @@ void analysis3()
 
     /////////////////////////// HALL CONSTANT - FIT //////////////////////////////////
 
-    TCanvas *canvas2_ = new TCanvas("canvas2_", "costante di Hall", 500, 5, 500, 600);
+    TCanvas *canvas2_ = new TCanvas("canvas2_", "costante di Hall", 500, 5, 500, 500);
 
     const int iter1[] = {0, 5, 10};
 
@@ -413,12 +410,13 @@ void analysis3()
         tf->SetParNames("b_{0}", "R_{H} / t");
 
         TGraphErrors *graph = new TGraphErrors(sub_B.size(), &sub_B[0], &sub_b1[0], &sub_sB[0], &sub_sb1[0]);
-        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} B}{t}};B [mT];b #left[#frac{mV}{mA}#right]");
+        if(i==0)    graph->SetTitle("#splitline{Costante di Hall}{polarita 1};B [mT];b #left[#frac{mV}{mA}#right]");
+        if(i==1)    graph->SetTitle("#splitline{Costante di Hall}{polarita 2};B [mT];b #left[#frac{mV}{mA}#right]");
 
         std_graph_settings(*graph);
         graph->GetYaxis()->SetTitleOffset(2.3);
         gPad->SetGrid();
-        gPad->SetTopMargin(0.20);
+        gPad->SetTopMargin(0.13);
         gPad->SetLeftMargin(0.20);
         graph->Fit(tf, "ER");
         graph->Draw("ap");
@@ -604,7 +602,7 @@ void analysis3()
 
     //////////////////////////////// FIT ALL SUB-DATASETS //////////////////////////////////////
 
-    TCanvas *canvas3 = new TCanvas("canvas3", "costante di Hall", 500, 5, 500, 600);
+    TCanvas *canvas3 = new TCanvas("canvas3", "costante di Hall", 500, 5, 500, 900);
     canvas3->SetGrid();
     canvas3->Divide(2, 3);
 
@@ -649,7 +647,6 @@ void analysis3()
         sb2.push_back(tf->GetParError(1));
     }
 
-    canvas3->SaveAs("../graphs/tensione_hall2.jpg");
     canvas3->SaveAs("../graphs/tensione_hall2.pdf");
 
     /////////////////////////////////// HALL CONSTANT //////////////////////////////////////////////
@@ -678,7 +675,7 @@ void analysis3()
 
     /////////////////////////// HALL CONSTANT - FIT //////////////////////////////////
 
-    TCanvas *canvas3_ = new TCanvas("canvas3_", "costante di Hall", 500, 5, 500, 600);
+    TCanvas *canvas3_ = new TCanvas("canvas3_", "costante di Hall", 500, 4, 500, 500);
 
     const int iter2[] = {0, sets2 / 2, sets2};
     vector<float> R_H2_fit, sR_H2_fit;
@@ -700,12 +697,13 @@ void analysis3()
         tf->SetParNames("b_{0}", "R_{H} / t");
 
         TGraphErrors *graph = new TGraphErrors(sub_i2.size(), &sub_i2[0], &sub_b2[0], &sub_si2[0], &sub_sb2[0]);
-        graph->SetTitle("#splitline{Costante di Hall}{b = b_{0} + #frac{R_{H} i}{t}};i [mA];b #left[#frac{mV}{mT}#right]");
+        if(i==0)    graph->SetTitle("#splitline{Costante di Hall}{polarita 1};i [mA];b #left[#frac{mV}{mT}#right]");
+        if(i==1)    graph->SetTitle("#splitline{Costante di Hall}{polarita 2};i [mA];b #left[#frac{mV}{mT}#right]");
 
         std_graph_settings(*graph);
         graph->GetYaxis()->SetTitleOffset(2.3);
         gPad->SetGrid();
-        gPad->SetTopMargin(0.20);
+        gPad->SetTopMargin(0.13);
         gPad->SetLeftMargin(0.20);
         graph->Fit(tf, "ER");
         graph->Draw("ap");

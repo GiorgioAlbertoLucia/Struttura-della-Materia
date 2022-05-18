@@ -111,7 +111,7 @@ void analysis4()
 
     /////////////////////////////// FIT //////////////////////////////////////////////////////
     
-    TCanvas * canvas = new TCanvas("canvas", "mobilità", 500, 5, 500, 600);
+    TCanvas * canvas = new TCanvas("canvas", "mobilità", 500, 5, 500, 500);
     
     const int n[] = {0, 9, 17};    // position where each subset begins
     const int sets = 2;
@@ -136,7 +136,7 @@ void analysis4()
     
         graph->GetYaxis()->SetTitleOffset(2.3);
         gPad->SetGrid();
-        gPad->SetTopMargin(0.20);
+        gPad->SetTopMargin(0.13);
         gPad->SetLeftMargin(0.20);
         graph->Fit(tf1, "ER");
         graph->Draw("ap");

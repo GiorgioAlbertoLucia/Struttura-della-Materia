@@ -160,7 +160,6 @@ void analysis5()
     
     graph1->Fit(tf1, "ER");
     graph1->Draw("ap");
-    canvas1->SaveAs("../graphs/magnetoresistenza1.jpg");
     canvas1->SaveAs("../graphs/magnetoresistenza1.pdf");
     
     cout << "Chi^2:" << tf1->GetChisquare() << ", number of DoF: " << tf1->GetNDF() << 
@@ -181,7 +180,6 @@ void analysis5()
     
     graph2->Fit(tf2, "MR");
     graph2->Draw("ap");
-    canvas2->SaveAs("../graphs/magnetoresistenza2.jpg");
     canvas2->SaveAs("../graphs/magnetoresistenza2.pdf");
     
     cout << "Chi^2:" << tf2->GetChisquare() << ", number of DoF: " << tf2->GetNDF() << 

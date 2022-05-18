@@ -86,7 +86,7 @@ void analysis6()
     ROOT::Math::Interpolator interpolator(R0.size(), ROOT::Math::Interpolation::kCSPLINE);
     interpolator.SetData(R0.size(), &R0[0], &T0[0]);
 
-    TCanvas * canvas0 = new TCanvas("canvas0", "TempInterpolazione", 500, 5, 500, 600);
+    TCanvas * canvas0 = new TCanvas("canvas0", "TempInterpolazione", 500, 5, 500, 500);
     canvas0->SetGrid();
 
     TGraph * graph0 = new TGraph(R0.size(), &R0[0], &T0[0]);
@@ -94,12 +94,14 @@ void analysis6()
     std_graph_settings(*graph0);
 
     graph0->GetYaxis()->SetTitleOffset(1.5);
+    gPad->SetTopMargin(0.10);
     graph0->SetLineColor(38);
     graph0->SetMarkerSize(0.2);
     graph0->SetMarkerColor(2);
     graph0->SetLineWidth(7);
     
     graph0->Draw("apl");
+    canvas0->BuildLegend();
     canvas0->SaveAs("../graphs/interpolazione.pdf");
 
 
@@ -223,7 +225,7 @@ void analysis6()
 
     vector<float> chi, schi, omega, somega;
 
-    TCanvas * canvas1 = new TCanvas("canvas1", "TempRiferimento", 500, 5, 500, 600);
+    TCanvas * canvas1 = new TCanvas("canvas1", "TempRiferimento", 500, 5, 500, 500);
     
     vector<double> sub1_VH1(VH1.begin(), VH1.begin()+22);
     vector<double> sub1_sVH1(sVH1.begin(), sVH1.begin()+22);
@@ -239,11 +241,15 @@ void analysis6()
     std_graph_settings_adv(*graph1);
     graph1->SetLineColor(38);
 
-    graph1->GetYaxis()->SetTitleOffset(2.5);
-    gPad->SetGrid();
+    graph1->GetYaxis()->SetTitleOffset(1.5);
+    gPad->SetTopMargin(0.10);
     gPad->SetLeftMargin(0.15);
     gPad->SetGrid();
     graph1->Draw("apl");
+    graph1->SetMarkerSize(0.4);
+    graph1->SetMarkerColor(1);
+
+    canvas1->BuildLegend();
     canvas1->SaveAs("../graphs/interpolazione_VH1_1.pdf");
 
 //----------
@@ -259,16 +265,19 @@ void analysis6()
     ROOT::Math::Interpolator interpolator2(sub2_T1.size(), ROOT::Math::Interpolation::kCSPLINE);
     interpolator2.SetData(sub2_T1.size(), &sub2_T1[0], &sub2_VH1[0]);
 
-    TGraph * graph1_ = new TGraph(sub1_T1.size(), &sub1_T1[0], &sub1_VH1[0]);
+    TGraphErrors * graph1_ = new TGraphErrors(sub2_T1.size(), &sub2_T1[0], &sub2_VH1[0], &sub2_sT1[0], &sub2_sVH1[0]);
     graph1_->SetTitle("Interpolazione V_{H};T [K];V_{H} [mV]");
     std_graph_settings_adv(*graph1_);
     graph1_->SetLineColor(38);
 
-    graph1->GetYaxis()->SetTitleOffset(2.5);
+    graph1_->GetYaxis()->SetTitleOffset(1.5);
     gPad->SetGrid();
     gPad->SetLeftMargin(0.15);
     gPad->SetGrid();
+    graph1_->SetMarkerSize(0.4);
+    graph1_->SetMarkerColor(1);
     graph1_->Draw("apl");
+    canvas1->BuildLegend();
     canvas1->SaveAs("../graphs/interpolazione_VH1_2.pdf");
 
 
@@ -342,7 +351,7 @@ void analysis6()
         else        entry2 = VH2.at(i) - interpolator2.Eval(T2.at(i));
         VH2_correct.push_back(entry2);              // mV
 
-        entry3 = VH2.at(i) * t * 1000/(i_const * B);    // V cm (A T)
+        entry3 = VH2_correct.at(i) * t * 1000/(i_const * B);    // V cm (A T)
         RH2.push_back(entry3);
 
         entry4 = VH2.at(i) * 0.02;
@@ -358,8 +367,8 @@ void analysis6()
         else        entry7 = sqrt(pow(sVH2.at(i),2) + pow(sT2.at(i)*interpolator2.Deriv(T2.at(i)),2));
         sVH2_correct.push_back(entry7);
 
-        entry8 = sqrt(pow(sVH2.at(i)*t*1000/(i_const*B), 2) + pow(sB*VH2.at(i)*t*1000/(i_const*B*B), 2) + 
-                        pow(VH2.at(i)*si_const*t*1000/(i_const*i_const*B), 2));
+        entry8 = sqrt(pow(sVH2_correct.at(i)*t*1000/(i_const*B), 2) + pow(sB*VH2_correct.at(i)*t*1000/(i_const*B*B), 2) + 
+                        pow(VH2_correct.at(i)*si_const*t*1000/(i_const*i_const*B), 2));
         sRH2.push_back(entry8);
     }
 
@@ -427,7 +436,7 @@ void analysis6()
 
     /////////////////////////////// FIT //////////////////////////////////////////////////////
     
-    TCanvas * canvas2 = new TCanvas("canvas2", "TempBconst", 500, 5, 500, 600);
+    TCanvas * canvas2 = new TCanvas("canvas2", "TempBconst", 500, 5, 500, 500);
     
     for (int i = 0; i < sets1; i++)
     {  
@@ -442,7 +451,7 @@ void analysis6()
         graph2->SetLineColor(38);
     
         graph2->GetYaxis()->SetTitleOffset(1.5);
-        gPad->SetGrid();
+        gPad->SetTopMargin(0.10);
         gPad->SetLeftMargin(0.20);
         gPad->SetGrid();
         graph2->Draw("apl");
@@ -453,7 +462,7 @@ void analysis6()
 
     // RH coefficient
     
-    TCanvas * canvas3 = new TCanvas("canvas3", "RHBconst", 500, 5, 500, 600);
+    TCanvas * canvas3 = new TCanvas("canvas3", "RHBconst", 500, 5, 500, 500);
     canvas3->Divide(1, 2);
     
     for (int i = 0; i < sets1; i++)
@@ -470,7 +479,7 @@ void analysis6()
         graph3->SetMarkerStyle(1);
         
         graph3->GetYaxis()->SetTitleOffset(1.5);
-        gPad->SetGrid();
+        gPad->SetTopMargin(0.10);
         gPad->SetLeftMargin(0.20);
         gPad->SetGrid();
         graph3->Draw("apl");

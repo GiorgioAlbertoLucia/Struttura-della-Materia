@@ -6,6 +6,7 @@
 #include <TGraphErrors.h>
 #include <TStyle.h>
 #include <TROOT.h>
+#include <TLegend.h>
 
 #include "useful_functions.cpp"
 
@@ -23,11 +24,13 @@ void analysis2()
 
     ///////////////////// SET OUTPUT IN A FILE AND OTHER GENERAL SETTINGS ///////////////////////
 
+    /*
     //freopen("../output/analysis2.txt", "w", stdout);
     gROOT->SetStyle("Plain");
     gStyle->SetOptFit(1110);
     gStyle->SetFitFormat("2.2e");
-
+    */
+   gROOT->SetStyle("Plain");
 
     ///////////////////// READ DATA FROM A FILE ////////////////////////////////////////////////
     
@@ -178,10 +181,9 @@ void analysis2()
 
     /////////////////////////////// FIT //////////////////////////////////////////////////////
     
-    TCanvas * canvas = new TCanvas("canvas", "isteresi", 500, 5, 500, 600);
-    canvas->SetGrid();
+    
 
-    TCanvas * canvas1 = new TCanvas("canvas1", "isteresi", 500, 5, 500, 600);
+    TCanvas * canvas1 = new TCanvas("canvas1", "isteresi", 500, 5, 500, 500);
     canvas1->SetGrid();
 
     TF1 * tf1 = new TF1("tf1", "[0]+[1]*x", -15, 15);
@@ -191,23 +193,16 @@ void analysis2()
     graph1->SetTitle("#splitline{Ciclo di isteresi}{prima discesa};I [A];B [mT]");
     std_graph_settings(*graph1);
     
+    gStyle->SetOptFit(1110);
     graph1->Fit(tf1, "ER");
     graph1->Draw("ap");
-    canvas1->SaveAs("../graphs/isteresi_1.jpg");
     canvas1->SaveAs("../graphs/isteresi_1.pdf");
 
-    canvas->cd();
-    graph1->SetTitle("Isteresi");
-    gPad->SetLeftMargin(0.16);
-    gPad->SetTopMargin(0.15);
-    graph1->Fit(tf1, "ER");
-    gStyle->SetOptFit(0);
-    graph1->Draw("ap");
     
     cout << "Chi^2:" << tf1->GetChisquare() << ", number of DoF: " << tf1->GetNDF() << 
     " (Probability: " << tf1->GetProb() << ")." << endl;
 
-    TCanvas * canvas2 = new TCanvas("canvas2", "isteresi", 500, 5, 500, 600);
+    TCanvas * canvas2 = new TCanvas("canvas2", "isteresi", 500, 5, 500, 500);
     canvas2->SetGrid();
 
     TF1 * tf2 = new TF1("tf2", "[0]+[1]*x", -15, 15);
@@ -217,22 +212,16 @@ void analysis2()
     graph2->SetTitle("#splitline{Ciclo di isteresi}{prima salita};I [A];B [mT]");
     std_graph_settings(*graph2);
     
-    gStyle->SetOptFit(1110);
+    
     graph2->Fit(tf2, "ER");
     graph2->Draw("ap");
-    canvas2->SaveAs("../graphs/isteresi_2.jpg");
     canvas2->SaveAs("../graphs/isteresi_2.pdf");
-
-    canvas->cd();
-    tf2->SetLineColor(2);
-    graph2->Fit(tf2, "ER");
-    gStyle->SetOptFit(0);
-    graph2->Draw("same");
+    
     
     cout << "Chi^2:" << tf2->GetChisquare() << ", number of DoF: " << tf2->GetNDF() << 
     " (Probability: " << tf2->GetProb() << ")." << endl;
 
-    TCanvas * canvas3 = new TCanvas("canvas3", "isteresi", 500, 5, 500, 600);
+    TCanvas * canvas3 = new TCanvas("canvas3", "isteresi", 500, 5, 500, 500);
     canvas3->SetGrid();
 
     TF1 * tf3 = new TF1("tf3", "[0]+[1]*x", -15, 15);
@@ -242,22 +231,15 @@ void analysis2()
     graph3->SetTitle("#splitline{Ciclo di isteresi}{seconda discesa};I [A];B [mT]");
     std_graph_settings(*graph3);
     
-    gStyle->SetOptFit(1110);
     graph3->Fit(tf3, "ER");
     graph3->Draw("ap");
-    canvas3->SaveAs("../graphs/isteresi_3.jpg");
     canvas3->SaveAs("../graphs/isteresi_3.pdf");
 
-    canvas->cd();
-    tf3->SetLineColor(3);
-    graph3->Fit(tf3, "ER");
-    gStyle->SetOptFit(0);
-    graph3->Draw("same");
     
     cout << "Chi^2:" << tf3->GetChisquare() << ", number of DoF: " << tf3->GetNDF() << 
     " (Probability: " << tf3->GetProb() << ")." << endl;
 
-    TCanvas * canvas4 = new TCanvas("canvas4", "isteresi", 500, 5, 500, 600);
+    TCanvas * canvas4 = new TCanvas("canvas4", "isteresi", 500, 5, 500, 500);
     canvas4->SetGrid();
 
     TF1 * tf4 = new TF1("tf4", "[0]+[1]*x", -15, 15);
@@ -267,22 +249,34 @@ void analysis2()
     graph4->SetTitle("#splitline{Ciclo di isteresi}{seconda salita};I [A];B [mT]");
     std_graph_settings(*graph4);
     
-    gStyle->SetOptFit(1110);
     graph4->Fit(tf4, "ER");
     graph4->Draw("ap");
-    canvas4->SaveAs("../graphs/isteresi_4.jpg");
     canvas4->SaveAs("../graphs/isteresi_4.pdf");
-
-    canvas->cd();
-    tf4->SetLineColor(4);
-    graph4->Fit(tf4, "ER");
-    gStyle->SetOptFit(0);
-    graph4->Draw("same");
-    canvas->SaveAs("../graphs/isteresi.jpg");
-    canvas->SaveAs("../graphs/isteresi.pdf");
     
     cout << "Chi^2:" << tf4->GetChisquare() << ", number of DoF: " << tf4->GetNDF() << 
     " (Probability: " << tf4->GetProb() << ")." << endl;
+
+    TCanvas * canvas = new TCanvas("canvas", "isteresi", 500, 5, 500, 500);
+    canvas->SetGrid();
+
+    gStyle->SetOptFit(kFALSE);
+    gPad->SetLeftMargin(0.15);
+    graph1->SetTitle("Ciclo di Isteresi;I [A];B [mT]");
+
+    graph1->Draw("ap");
+    graph2->Draw("same");
+    graph3->Draw("same");
+    graph4->Draw("same");
+    
+    TLegend * legend = new TLegend(0.15, 0.7, 0.50, 0.9);
+    legend->AddEntry(tf1, "Fit per la prima discesa", "l");
+    legend->AddEntry(tf2, "Fit per la prima salita", "l");
+    legend->AddEntry(tf3, "Fit per la seconda discesa", "l");
+    legend->AddEntry(tf4, "Fit per la seconda salita", "l");
+    legend->SetTextSize(0.022);
+    legend->Draw();
+    
+    //canvas->SaveAs("../graphs/isteresi.pdf");
 
 
     ////////////////////////////////// ∆B /////////////////////////////////////////////
@@ -336,6 +330,38 @@ void analysis2()
     
     // per calcolare ∆B_cal nei prossimi file di analisi dati, tener conto del fatto che 
     // B = e + f * I -> ∆B = ...
+
+
+
+    ///////////////// CICLO ISTERESI ///////////////////////////////
+
+    vector<float> I, B, sB;
+    sI.clear();
+    for(int i=0; i<I1.size(); i++)
+    {
+        I.push_back(I1.at(i));
+        sI.push_back(sI1.at(i));
+        B.push_back(B1.at(i));
+        sB.push_back(sB1.at(i));
+    }
+    for(int i=0; i<I2.size(); i++)
+    {
+        I.push_back(I2.at(i));
+        sI.push_back(sI2.at(i));
+        B.push_back(B2.at(i));
+        sB.push_back(sB2.at(i));
+    }
+
+    TCanvas * canvas0 = new TCanvas("canvas0", "isteresi", 500, 5, 400, 400);
+    canvas0->SetGrid();
+
+    TGraphErrors * graph0 = new TGraphErrors(I.size(), &I[0], &B[0], &sI[0], &sB[0]);
+    graph0->SetTitle("Ciclo di isteresi; I [A]; B [mT]");
+    std_graph_settings(*graph0);
+
+    gPad->SetTopMargin(0.10);
+    graph0->Draw("apl");
+    canvas0->SaveAs("../graphs/isteresi_pic.pdf");
 
 
 }
